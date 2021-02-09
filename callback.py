@@ -16,15 +16,10 @@ class CallbackDataType(Enum):
     SEND_QUESTION = "NOT_FOUND"
 
 
-class CallbackData:
-    type: CallbackDataType
-    payload: any
-
-
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
     data = {'type': data_type.value}
     if payload is not None:
-        data.payload = payload
+        data['payload'] = payload
     return json.dumps(data)
 
 
