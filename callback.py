@@ -2,6 +2,12 @@ import json
 from enum import Enum
 from typing import Optional
 
+from telegram import Update
+from telegram.ext import CallbackContext
+from strings import strings
+
+callback_strings = strings.callbacks
+
 
 class CallbackDataType(Enum):
     START = "START"
@@ -44,3 +50,22 @@ callbacks = {
     'start': start_cbd,
     'get_in': get_in_cbd,
 }
+
+
+def callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    data: CallbackDataType = json.loads(query.data)
+    print(data)
+    data_type = data['type']
+
+    not_found_alert = callback_strings.not_found_alert
+    if data_type == CallbackDataType.HELP:
+        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+    elif data_type == CallbackDataType.SEND_QUESTION:
+        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+    elif data_type == CallbackDataType.GET_IN:
+        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+    elif data_type == CallbackDataType.START:
+        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+    else:
+        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)

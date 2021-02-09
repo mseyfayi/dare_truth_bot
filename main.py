@@ -1,5 +1,6 @@
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
+from callback import callback
 from commands import start
 
 if __name__ == '__main__':
@@ -8,6 +9,7 @@ if __name__ == '__main__':
 
     handlers = [
         CommandHandler('start', start),
+        CallbackQueryHandler(callback)
     ]
 
     for h in handlers:
