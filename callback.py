@@ -76,7 +76,7 @@ def callback(update: Update, context: CallbackContext):
     elif CallbackDataType.GET_IN.value == data_type:
         game_id = payloads[0]
     elif CallbackDataType.START.value == data_type:
-        game = Game.get_instance(uuid.UUID(payloads[0]))
+        game = Game.get_instance(payloads[0])
         starter_id = user.id
         game.start(starter_id, alert)
     else:

@@ -23,15 +23,19 @@ def join_values(ll: Tuple):
     return join(new_list)
 
 
-def insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tuple]]) -> int:
+def db_insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tuple]]) -> int:
     sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, join(column_names), join_values(values))
+    print("insert: ", sql)
     cursor.execute(sql, values)
     mydb.commit()
     return cursor.lastrowid
 
 
-def select(table_name: str, column_names: Optional[Tuple] = None) -> List:
+def db_select(table_name: str, column_names: Optional[Tuple] = None, where_clause: Optional[str] = None) -> List[Tuple]:
     column_names2 = join(column_names) if column_names else '*'
     sql = "SELECT {} FROM {}".format(column_names2, table_name)
+    if where_clause:
+        sql += " WHERE " + where_clause
+    print("select: ", sql)
     cursor.execute(sql)
     return cursor.fetchall()

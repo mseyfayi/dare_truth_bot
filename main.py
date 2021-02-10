@@ -3,9 +3,17 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQu
 
 from callback import callback
 from commands import start
+from game import Game
 from inline import inline
 
+
+def load_data():
+    Game.load_all()
+
+
 if __name__ == '__main__':
+    load_data()
+
     updater = Updater(config('BOT_TOKEN'))
     dp = updater.dispatcher
 

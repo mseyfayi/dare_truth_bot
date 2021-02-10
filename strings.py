@@ -33,16 +33,24 @@ class Inline:
         self.query_result = query_result
 
 
+class GameAlerts:
+    def __init__(self, start_minimum: str, start_non_inviter: str, already_got_in: str):
+        self.start_minimum = start_minimum
+        self.start_non_inviter = start_non_inviter
+        self.already_got_in = already_got_in
+
+
 class Game:
-    def __init__(self, inline: Inline):
-        self.inline = inline
+    def __init__(self, alert: GameAlerts):
+        self.alert = alert
 
 
 class Strings:
-    def __init__(self, commands: Commands, callbacks: Callbacks, game: Game):
+    def __init__(self, commands: Commands, callbacks: Callbacks, inline: Inline, game: Game):
         self.commands = commands
         self.callbacks = callbacks
         self.game = game
+        self.inline = inline
 
 
 strings: Strings = Strings(
@@ -59,16 +67,21 @@ strings: Strings = Strings(
     Callbacks(
         'ان شا اللّه بزودی آماده می‌شه :))'
     ),
+    Inline(
+        "ارسال",
+        StringsTextBtn(
+            create_game_inline_query_text,
+            {
+                'start': 'شروع بازی',
+                'get_in': 'منم هستم'
+            }
+        )
+    ),
     Game(
-        Inline(
-            "ارسال",
-            StringsTextBtn(
-                create_game_inline_query_text,
-                {
-                    'start': 'شروع بازی',
-                    'get_in': 'منم هستم'
-                }
-            )
+        GameAlerts(
+            "باید تعداد بیشتری عضو بشن",
+            "دعوت کننده میتونه شروع کنه فقط",
+            "شما قبلا عضو شدی"
         )
     )
 )

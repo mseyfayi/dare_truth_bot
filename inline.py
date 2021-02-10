@@ -1,9 +1,7 @@
-import json
 import uuid
 from typing import List
 
-from telegram import Update, InlineQueryResultArticle, ParseMode, InputTextMessageContent, InlineKeyboardMarkup, \
-    MessageEntity, User
+from telegram import Update, InlineQueryResultArticle, ParseMode, InputTextMessageContent, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
 from game import Game
@@ -16,13 +14,12 @@ inline_strings = strings.game.inline
 def inline(update: Update, context: CallbackContext):
     user = update.inline_query.from_user
     name = user.first_name
-    game_id = uuid.uuid4()
-    Game(game_id, str(user.id))
-    article = create_article(name, [name], user, game_id.hex)
+    game = Game(str(user.id))
+    article = create_article(name, [name], game.game_id)
     context.bot.answer_inline_query(update.inline_query.id, [article])
 
 
-def create_article(name: str, members: List[str], user: User, game_id: str) -> InlineQueryResultArticle:
+def create_article(name: str, members: List[str], game_id: str) -> InlineQueryResultArticle:
     content = InputTextMessageContent(inline_strings.query_result.text(name, members), parse_mode=ParseMode.MARKDOWN)
     buttons = inline_strings.query_result.buttons
     start_payload = "{}".format(game_id)
