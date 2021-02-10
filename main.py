@@ -2,7 +2,7 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQu
 
 from callback import callback
 from commands import start
-from game.inline import inline
+from inline import inline
 
 if __name__ == '__main__':
     updater = Updater('1663301535:AAFlj2PjCoYzfTBgkHDY3bizwA0nL9Agn18')

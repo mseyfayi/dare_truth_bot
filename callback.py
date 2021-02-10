@@ -1,9 +1,11 @@
 import json
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict, List
 
 from telegram import Update
 from telegram.ext import CallbackContext
+
+from game import start
 from strings import strings
 
 callback_strings = strings.callbacks
@@ -31,8 +33,8 @@ def send_question_cbd() -> str:
     return _create_callback_data(CallbackDataType.SEND_QUESTION)
 
 
-def start_cbd(starter_id: str) -> str:
-    return _create_callback_data(CallbackDataType.START, starter_id)
+def start_cbd(start_payload: Dict[str, str]) -> str:
+    return _create_callback_data(CallbackDataType.START, start_payload)
 
 
 def get_in_cbd() -> str:
@@ -49,18 +51,23 @@ callbacks = {
 
 def callback(update: Update, context: CallbackContext):
     query = update.callback_query
-    data: CallbackDataType = json.loads(query.data)
+    data = json.loads(query.data)
+    not_found_alert = callback_strings.not_found_alert
+
+    def alert(text: str):
+        context.bot.answer_callback_query(callback_query_id=query.id, text=text, show_alert=True)
+
     print(data)
     data_type = data['type']
-
-    not_found_alert = callback_strings.not_found_alert
-    if data_type == CallbackDataType.HELP:
-        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
-    elif data_type == CallbackDataType.SEND_QUESTION:
-        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
-    elif data_type == CallbackDataType.GET_IN:
-        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
-    elif data_type == CallbackDataType.START:
-        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+    if data_type == CallbackDataType.HELP.value:
+        alert(not_found_alert)
+    elif data_type == CallbackDataType.SEND_QUESTION.value:
+        alert(not_found_alert)
+    elif data_type == CallbackDataType.GET_IN.value:
+        alert(not_found_alert)
+    elif data_type == CallbackDataType.START.value:
+        payload: str = data['payload']
+        [starter_id, game_id] = payload.split(';')
+        start(starter_id, game_id, alert)
     else:
-        context.bot.answer_callback_query(callback_query_id=query.id, text=not_found_alert, show_alert=True)
+        print("koft1")

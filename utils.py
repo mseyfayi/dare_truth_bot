@@ -27,6 +27,7 @@ def create_inline_button(
     else:
         callback_data = callbacks[name]
         if callback_data_creator_payload:
+            print(callback_data(callback_data_creator_payload))
             return InlineKeyboardButton(btn, callback_data=callback_data(callback_data_creator_payload))
         else:
             return InlineKeyboardButton(btn, callback_data=callback_data())
