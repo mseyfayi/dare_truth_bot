@@ -8,7 +8,7 @@ from game import Game
 from strings import strings
 from utils import build_menu, create_inline_button
 
-inline_strings = strings.game.inline
+inline_strings = strings.inline
 
 
 def inline(update: Update, context: CallbackContext):

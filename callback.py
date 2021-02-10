@@ -74,10 +74,14 @@ def callback(update: Update, context: CallbackContext):
     elif CallbackDataType.SEND_QUESTION.value == data_type:
         alert(not_found_alert)
     elif CallbackDataType.GET_IN.value == data_type:
-        game_id = payloads[0]
+        [game_id] = payloads
+        game = Game.get_instance(game_id)
+        user_id = user.id
+        game.get_in(user_id,alert)
     elif CallbackDataType.START.value == data_type:
-        game = Game.get_instance(payloads[0])
+        [game_id] = payloads
         starter_id = user.id
+        game = Game.get_instance(game_id)
         game.start(starter_id, alert)
     else:
         print("koft1")

@@ -57,6 +57,12 @@ class Game:
         print("Games: ", cls.instances)
         return cls.instances[int(game_id)]
 
+    def add_member(self, member_id):
+        self.members.append(member_id)
+        columns = ('game_id', 'member_id')
+        values = (self.game_id, member_id)
+        db_insert('member', columns, values)
+
     def start(self, starter_id: str, alert: Callable[[str], None]):
         if starter_id != self.inviter_id:
             alert(game_strings.alert.start_non_inviter)
@@ -65,5 +71,10 @@ class Game:
 
         # todo
 
-    def get_in(self, ):
-        pass
+    def get_in(self, user_id: str, alert: Callable[[str], None]):
+        if user_id in self.members:
+            alert(game_strings.alert.already_got_in)
+            return
+        self.add_member(user_id)
+        alert(game_strings.alert.successfully_got_in)
+        # todo edit message
