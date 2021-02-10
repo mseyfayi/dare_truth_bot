@@ -1,3 +1,4 @@
+from decouple import config
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQueryHandler
 
 from callback import callback
@@ -5,7 +6,7 @@ from commands import start
 from inline import inline
 
 if __name__ == '__main__':
-    updater = Updater('1663301535:AAFlj2PjCoYzfTBgkHDY3bizwA0nL9Agn18')
+    updater = Updater(config('BOT_TOKEN'))
     dp = updater.dispatcher
 
     handlers = [
