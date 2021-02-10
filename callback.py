@@ -1,11 +1,11 @@
-import json
+import uuid
 from enum import Enum
-from typing import Optional, Dict, List
+from typing import Optional, List, Tuple, Union
 
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from game import start
+from game import Game
 from strings import strings
 
 callback_strings = strings.callbacks
@@ -19,10 +19,19 @@ class CallbackDataType(Enum):
 
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
-    data = {'type': data_type.value}
+    data = data_type.value
     if payload is not None:
-        data['payload'] = payload
-    return json.dumps(data)
+        data += ";" + payload
+    return data
+
+
+def _restore_callback_data(data: str) -> Tuple[str, Union[List, None]]:
+    if data.find(";"):
+        split: List[str] = data.split(";")
+        type, payloads = split[0], split[1:]
+        return type, payloads
+    else:
+        return data, None
 
 
 def help_cbd() -> str:
@@ -33,12 +42,12 @@ def send_question_cbd() -> str:
     return _create_callback_data(CallbackDataType.SEND_QUESTION)
 
 
-def start_cbd(start_payload: Dict[str, str]) -> str:
+def start_cbd(start_payload: str) -> str:
     return _create_callback_data(CallbackDataType.START, start_payload)
 
 
-def get_in_cbd() -> str:
-    return _create_callback_data(CallbackDataType.GET_IN)
+def get_in_cbd(get_in_payload: str) -> str:
+    return _create_callback_data(CallbackDataType.GET_IN, get_in_payload)
 
 
 callbacks = {
@@ -51,23 +60,24 @@ callbacks = {
 
 def callback(update: Update, context: CallbackContext):
     query = update.callback_query
-    data = json.loads(query.data)
+    user = query.from_user
+    data = query.data
     not_found_alert = callback_strings.not_found_alert
 
     def alert(text: str):
         context.bot.answer_callback_query(callback_query_id=query.id, text=text, show_alert=True)
 
-    print(data)
-    data_type = data['type']
-    if data_type == CallbackDataType.HELP.value:
+    print("received: ", data)
+    data_type, payloads = _restore_callback_data(data)
+    if CallbackDataType.HELP.value == data_type:
         alert(not_found_alert)
-    elif data_type == CallbackDataType.SEND_QUESTION.value:
+    elif CallbackDataType.SEND_QUESTION.value == data_type:
         alert(not_found_alert)
-    elif data_type == CallbackDataType.GET_IN.value:
-        alert(not_found_alert)
-    elif data_type == CallbackDataType.START.value:
-        payload: str = data['payload']
-        [starter_id, game_id] = payload.split(';')
-        start(starter_id, game_id, alert)
+    elif CallbackDataType.GET_IN.value == data_type:
+        game_id = payloads[0]
+    elif CallbackDataType.START.value == data_type:
+        game = Game.get_instance(uuid.UUID(payloads[0]))
+        starter_id = user.id
+        game.start(starter_id, alert)
     else:
         print("koft1")
