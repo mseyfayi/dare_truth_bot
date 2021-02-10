@@ -1,5 +1,5 @@
-import datetime
-from typing import List, Union, Tuple, Optional
+from abc import ABC
+from typing import List, Union, Tuple, Optional, Dict
 
 import mysql.connector
 from decouple import config
@@ -31,6 +31,13 @@ def db_insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tu
     return cursor.lastrowid
 
 
+def db_update(table_name: str, column_value: Tuple[str, str], where_clause: str):
+    sql = "UPDATE {} SET {}={} WHERE {}".format(table_name, column_value[0], column_value[1], where_clause)
+    print("update: ", sql)
+    cursor.execute(sql)
+    mydb.commit()
+
+
 def db_select(table_name: str, column_names: Optional[Tuple] = None, where_clause: Optional[str] = None) -> List[Tuple]:
     column_names2 = join(column_names) if column_names else '*'
     sql = "SELECT {} FROM {}".format(column_names2, table_name)
@@ -39,3 +46,25 @@ def db_select(table_name: str, column_names: Optional[Tuple] = None, where_claus
     print("select: ", sql)
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+class Entity(ABC):
+    instances: Dict[int, 'Entity'] = {}
+
+    @classmethod
+    def _insert(cls, game: 'Entity') -> int:
+        pass
+
+    @classmethod
+    def load_all(cls):
+        pass
+
+    @classmethod
+    def _convert_tuple(cls, t: Tuple) -> 'Entity':
+        pass
+
+    @classmethod
+    def get_instance(cls, entity_id: int) -> Union[None, 'Entity']:
+        if int(entity_id) in cls.instances:
+            return cls.instances[int(entity_id)]
+        return None

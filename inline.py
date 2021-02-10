@@ -6,6 +6,7 @@ from telegram.ext import CallbackContext
 
 from game import Game
 from strings import strings
+from user import MyUser
 from utils import build_menu, create_inline_button
 
 inline_strings = strings.inline
@@ -14,7 +15,7 @@ inline_strings = strings.inline
 def inline(update: Update, context: CallbackContext):
     user = update.inline_query.from_user
     name = user.first_name
-    game = Game(str(user.id))
+    game = Game(MyUser.new(user.id,user.first_name))
     article = create_article(name, [name], game.game_id)
     context.bot.answer_inline_query(update.inline_query.id, [article])
 
