@@ -52,16 +52,11 @@ def truth_cbd(payload: str):
     return _create_callback_data(CallbackDataType.TRUTH, payload)
 
 
-def chat_cbd(payload: str):
-    return _create_callback_data(CallbackDataType.CHAT, payload)
-
-
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
     'start': start_cbd,
     'get_in': get_in_cbd,
     'dare': dare_cbd,
-    'chat': chat_cbd,
     'truth': truth_cbd,
 }

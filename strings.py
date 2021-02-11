@@ -43,7 +43,6 @@ def create_game_choose_text(game) -> str:
 dtc = {
     'dare': 'جرات',
     'truth': 'حقیقت',
-    'chat': 'چت'
 }
 
 
