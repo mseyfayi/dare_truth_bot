@@ -46,8 +46,7 @@ dtc = {
 }
 
 
-def create_game_answer_text(game, dtc_type: str, question: str) -> str:
-    user = game.turn.name
+def create_game_answer_text(user: str, dtc_type: str, question: str) -> str:
     dtc_text = dtc[dtc_type]
     text = "کاربر '{}' {} رو انتخاب کرد\n\n" \
            "متن سوال:\n\n" \

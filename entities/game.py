@@ -136,6 +136,13 @@ class Game:
         next_q: Question = self.next_question()
         edit_question(self.turn, next_q)
 
+    def answer(self, user_id: int, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
+        if self.turn.id != user_id:
+            alert(game_strings.alert.not_ur_turn)
+            return
+        self.next_turn()
+        edit_game_inline()
+
     @classmethod
     def get_instance(cls, entity_id: int) -> Union[None, 'Game']:
         if int(entity_id) in cls.instances:

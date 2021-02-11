@@ -22,11 +22,11 @@ def create_choice_markup(game_id: int) -> ReplyMarkup:
     return reply_markup
 
 
-def create_question_markup(game_id:int):
+def create_question_markup(game_id: int):
     buttons = callback_strings.edit_text3.buttons
     payload = "{}".format(game_id)
     button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload) for t in buttons.keys()]
-    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
+    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=1))
     return reply_markup
 
 
@@ -71,11 +71,18 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_question(user: MyUser, question: Question):
-            # edit_message(callback_strings.edit_text3.text(game, question.type, question.text),
-            #              create_question_markup(game_id))
-            #  todo
-            pass
+            edit_message(callback_strings.edit_text3.text(user.name, question.type, question.text),
+                         create_question_markup(game_id))
 
         game.choose(user_id, alert, edit_question)
+    elif CallbackDataType.ANSWER.value == data_type:
+        [game_id] = payloads
+        user_id = user.id
+        game = Game.get_instance(game_id)
+
+        def edit_game_inline():
+            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id))
+
+        game.answer(user_id, alert, edit_game_inline)
     else:
         print("koft1")
