@@ -60,25 +60,3 @@ def db_select(
     print("select: ", sql)
     cursor.execute(sql)
     return cursor.fetchall()
-
-
-class Entity(ABC):
-    instances: Dict[int, 'Entity'] = {}
-
-    @classmethod
-    def _insert(cls, game: 'Entity') -> int:
-        pass
-
-    @classmethod
-    def load_all(cls):
-        pass
-
-    @classmethod
-    def _convert_tuple(cls, t: Tuple) -> 'Entity':
-        pass
-
-    @classmethod
-    def get_instance(cls, entity_id: int) -> Union[None, 'Entity']:
-        if int(entity_id) in cls.instances:
-            return cls.instances[int(entity_id)]
-        return None

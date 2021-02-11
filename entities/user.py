@@ -1,9 +1,11 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
-from entities.database import db_select, Entity, db_insert, db_update
+from entities.database import db_select, db_insert, db_update
 
 
-class MyUser(Entity):
+class MyUser:
+    instances: List['MyUser'] = []
+
     def __init__(self):
         self.id = None
         self.name = None
@@ -49,3 +51,9 @@ class MyUser(Entity):
         user.id = t[0]
         user.name = t[1]
         return user
+
+    @classmethod
+    def get_instance(cls, entity_id: int) -> Union[None, 'MyUser']:
+        if int(entity_id) in cls.instances:
+            return cls.instances[int(entity_id)]
+        return None

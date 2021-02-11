@@ -1,8 +1,8 @@
 from datetime import datetime
 import random
-from typing import Callable, Tuple, List, Optional
+from typing import Callable, Tuple, List, Optional, Union
 
-from entities.database import db_insert, db_select, Entity
+from entities.database import db_insert, db_select
 from strings import strings
 from entities.user import MyUser
 
@@ -10,7 +10,9 @@ MINIMUM_MEMBER = 2
 game_strings = strings.game
 
 
-class Game(Entity):
+class Game:
+    instances: List['Game'] = []
+
     def __init__(self, inviter: MyUser):
         self.inviter: MyUser = inviter
         self.turn: Optional[MyUser] = None
@@ -98,3 +100,9 @@ class Game(Entity):
         self.add_member(user.id)
         alert(game_strings.alert.successfully_got_in)
         edit_game_inline()
+
+    @classmethod
+    def get_instance(cls, entity_id: int) -> Union[None, 'Game']:
+        if int(entity_id) in cls.instances:
+            return cls.instances[int(entity_id)]
+        return None
