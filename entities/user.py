@@ -1,10 +1,10 @@
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Dict
 
 from entities.database import db_select, db_insert, db_update
 
 
 class MyUser:
-    instances: List['MyUser'] = []
+    instances: Dict[int, 'MyUser'] = {}
 
     def __init__(self):
         self.id = None

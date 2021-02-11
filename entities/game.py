@@ -1,6 +1,6 @@
 from datetime import datetime
 import random
-from typing import Callable, Tuple, List, Optional, Union
+from typing import Callable, Tuple, List, Optional, Union, Dict
 
 from entities.database import db_insert, db_select, db_update
 from strings import strings
@@ -11,7 +11,7 @@ game_strings = strings.game
 
 
 class Game:
-    instances: List['Game'] = []
+    instances: Dict[int, 'Game'] = {}
 
     def __init__(self, inviter: MyUser):
         self.inviter: MyUser = inviter
