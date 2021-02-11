@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 from typing import Callable, Tuple, List, Optional, Union
 
-from entities.database import db_insert, db_select
+from entities.database import db_insert, db_select, db_update
 from strings import strings
 from entities.user import MyUser
 
@@ -67,9 +67,9 @@ class Game:
         game = cls.__new__(cls)
         game.game_id = t[0]
         inviter_id = t[1]
-        game.inviter = cls.instances[int(inviter_id)]
+        game.inviter = MyUser.instances[int(inviter_id)]
         turn_id = t[2]
-        game.turn = cls.instances[int(turn_id)] if turn_id else None
+        game.turn = MyUser.instances[int(turn_id)] if turn_id else None
         game.is_active = t[3]
         game.created_at = t[4]
         game.deleted_at = t[5]
@@ -83,6 +83,7 @@ class Game:
 
     def next_turn(self):
         self.turn = random.choice(self.members)
+        db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.game_id))
 
     def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if starter_id != self.inviter.id:
