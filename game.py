@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable, Tuple, List
+from typing import Callable, Tuple, List, Optional
 
 from database import db_insert, db_select, Entity
 from strings import strings
@@ -11,11 +11,11 @@ game_strings = strings.game
 
 class Game(Entity):
     def __init__(self, inviter: MyUser):
-
-        self.inviter = inviter
-        self.is_active = 1
-        self.created_at = datetime.now()
-        self.deleted_at = None
+        self.inviter: MyUser = inviter
+        self.turn: Optional[MyUser] = None
+        self.is_active: int = 1
+        self.created_at: datetime = datetime.now()
+        self.deleted_at: Optional[datetime] = None
         self.members: List[MyUser] = [inviter]
 
         self.game_id = self.__class__._insert(self)
@@ -60,14 +60,16 @@ class Game(Entity):
             cls.instances[game.game_id] = game
 
     @classmethod
-    def _convert_tuple(cls, t: Tuple[str, str, str, str, str]) -> 'Game':
+    def _convert_tuple(cls, t: Tuple[str, str, str, str, str, str]) -> 'Game':
         game = cls.__new__(cls)
         game.game_id = t[0]
         inviter_id = t[1]
         game.inviter = cls.instances[int(inviter_id)]
-        game.is_active = t[2]
-        game.created_at = t[3]
-        game.deleted_at = t[4]
+        turn_id = t[2]
+        game.turn = cls.instances[int(turn_id)] if turn_id else None
+        game.is_active = t[3]
+        game.created_at = t[4]
+        game.deleted_at = t[5]
         return game
 
     def add_member(self, member_id):
@@ -76,13 +78,12 @@ class Game(Entity):
         values = (self.game_id, member_id)
         db_insert('member', columns, values)
 
-    def start(self, starter_id: str, alert: Callable[[str], None]):
+    def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if starter_id != self.inviter.id:
             alert(game_strings.alert.start_non_inviter)
         if len(self.members) < MINIMUM_MEMBER:
             alert(game_strings.alert.start_minimum)
-
-        # todo
+        edit_game_inline()
 
     def get_in(self, user: MyUser, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if any(m.id == user.id for m in self.members):
