@@ -1,10 +1,10 @@
 from decouple import config
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQueryHandler
 
-from callback import callback
-from commands import start
+from bot.callback import callback
+from bot.commands import start
 from game import Game
-from inline import inline
+from bot.inline import inline
 from user import MyUser
 
 
