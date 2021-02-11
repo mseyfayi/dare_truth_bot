@@ -1,4 +1,3 @@
-import uuid
 from enum import Enum
 from typing import Optional, List, Tuple, Union
 
@@ -7,6 +6,7 @@ from telegram.ext import CallbackContext
 
 from game import Game
 from strings import strings
+from user import MyUser
 
 callback_strings = strings.callbacks
 
@@ -76,8 +76,7 @@ def callback(update: Update, context: CallbackContext):
     elif CallbackDataType.GET_IN.value == data_type:
         [game_id] = payloads
         game = Game.get_instance(game_id)
-        user_id = user.id
-        game.get_in(user_id,alert)
+        game.get_in(MyUser.new(user.id, user.first_name), alert)
     elif CallbackDataType.START.value == data_type:
         [game_id] = payloads
         starter_id = user.id

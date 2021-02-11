@@ -16,7 +16,7 @@ class Game(Entity):
         self.is_active = 1
         self.created_at = datetime.now()
         self.deleted_at = None
-        self.members: List[MyUser] = []
+        self.members: List[MyUser] = [inviter]
 
         self.game_id = self.__class__._insert(self)
         self.__class__.instances[self.game_id] = self
@@ -24,9 +24,28 @@ class Game(Entity):
 
     @classmethod
     def _insert(cls, game: 'Game') -> int:
-        columns = ('inviter_id', 'is_active', 'created_at')
-        values = (game.inviter.id, game.is_active, game.created_at)
-        return db_insert('game', columns, values)
+        columns1 = ('inviter_id', 'is_active', 'created_at')
+        values1 = (game.inviter.id, game.is_active, game.created_at)
+        game_id = db_insert('game', columns1, values1)
+
+        columns2 = ('member_id', 'game_id')
+        values2 = (game.inviter.id, game_id)
+        db_insert('member', columns2, values2)
+
+        return game_id
+
+    @classmethod
+    def _convert_tuple_member(cls, t: Tuple[str, str]) -> MyUser:
+        return MyUser.new(int(t[0]), t[1])
+
+    @classmethod
+    def _fetch_members(cls, game_id: int) -> List[MyUser]:
+        columns = ('id', 'name')
+        join_table = ('user', 'id')
+        table_join_id = 'member_id'
+        select_result = db_select('member', column_names=columns, join_table_table_id=join_table,
+                                  table_id_to_join=table_join_id, where_clause='game_id=' + str(game_id))
+        return [cls._convert_tuple_member(m) for m in select_result]
 
     @classmethod
     def load_all(cls):
@@ -36,11 +55,9 @@ class Game(Entity):
             game = cls._convert_tuple(t)
             if game.deleted_at or game.is_active == 0:
                 continue
-            members: List[Tuple] = db_select('member', where_clause='game_id=' + str(game.game_id))
+            members: List[MyUser] = cls._fetch_members(game.game_id)
             game.members = members
             cls.instances[game.game_id] = game
-
-        print(cls.instances)
 
     @classmethod
     def _convert_tuple(cls, t: Tuple[str, str, str, str, str]) -> 'Game':
@@ -66,10 +83,10 @@ class Game(Entity):
 
         # todo
 
-    def get_in(self, user_id: str, alert: Callable[[str], None]):
-        if user_id in self.members:
+    def get_in(self, user: MyUser, alert: Callable[[str], None]):
+        if any(m.id == user.id for m in self.members):
             alert(game_strings.alert.already_got_in)
             return
-        self.add_member(user_id)
+        self.add_member(user.id)
         alert(game_strings.alert.successfully_got_in)
         # todo edit message

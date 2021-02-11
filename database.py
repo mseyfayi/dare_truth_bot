@@ -14,17 +14,21 @@ mydb = mysql.connector.connect(
 cursor = mydb.cursor()
 
 
-def join(ll: Union[Tuple, List]):
+def csv(ll: Union[Tuple, List]) -> str:
     return ', '.join(map(str, ll))
 
 
-def join_values(ll: Tuple):
+def csv4values(ll: Tuple) -> str:
     new_list = ['%s' for i in ll]
-    return join(new_list)
+    return csv(new_list)
+
+
+def join_clause(to_join: Tuple[str, str], table_name: str, table_id: str) -> str:
+    return "{} JOIN {} ON {}.{} = {}.{}".format(table_name, to_join[0], table_name, table_id, to_join[0], to_join[1])
 
 
 def db_insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tuple]]) -> int:
-    sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, join(column_names), join_values(values))
+    sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, csv(column_names), csv4values(values))
     print("insert: ", sql)
     cursor.execute(sql, values)
     mydb.commit()
@@ -38,9 +42,19 @@ def db_update(table_name: str, column_value: Tuple[str, str], where_clause: str)
     mydb.commit()
 
 
-def db_select(table_name: str, column_names: Optional[Tuple] = None, where_clause: Optional[str] = None) -> List[Tuple]:
-    column_names2 = join(column_names) if column_names else '*'
-    sql = "SELECT {} FROM {}".format(column_names2, table_name)
+def db_select(
+        table_name: str,
+        column_names: Optional[Tuple] = None,
+        where_clause: Optional[str] = None,
+        join_table_table_id: Optional[Tuple[str, str]] = None,
+        table_id_to_join: Optional[str] = None
+) -> List[Tuple]:
+    column_names2 = csv(column_names) if column_names else '*'
+    if join_table_table_id and table_id_to_join:
+        from_clause = join_clause(join_table_table_id, table_name, table_id_to_join)
+    else:
+        from_clause = table_name
+    sql = "SELECT {} FROM {}".format(column_names2, from_clause)
     if where_clause:
         sql += " WHERE " + where_clause
     print("select: ", sql)

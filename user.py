@@ -43,8 +43,6 @@ class MyUser(Entity):
             user = cls._convert_tuple(t)
             cls.instances[user.id] = user
 
-        print(cls.instances)
-
     @classmethod
     def _convert_tuple(cls, t: Tuple[str, str]) -> 'MyUser':
         user = cls.__new__(cls)
