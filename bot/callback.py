@@ -1,61 +1,15 @@
-from enum import Enum
-from typing import Optional, List, Tuple, Union
+from typing import Optional
 
-from telegram import Update
+from telegram import Update, ReplyMarkup
 from telegram.ext import CallbackContext
 
+from bot.callback_data import CallbackDataType, _restore_callback_data
+from bot.inline import create_inline_markup
 from game import Game
 from strings import strings
 from user import MyUser
 
 callback_strings = strings.callbacks
-
-
-class CallbackDataType(Enum):
-    START = "START"
-    GET_IN = "GET_IN"
-    HELP = "NOT_FOUND"
-    SEND_QUESTION = "NOT_FOUND"
-
-
-def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
-    data = data_type.value
-    if payload is not None:
-        data += ";" + payload
-    return data
-
-
-def _restore_callback_data(data: str) -> Tuple[str, Union[List, None]]:
-    if data.find(";"):
-        split: List[str] = data.split(";")
-        type, payloads = split[0], split[1:]
-        return type, payloads
-    else:
-        return data, None
-
-
-def help_cbd() -> str:
-    return _create_callback_data(CallbackDataType.HELP)
-
-
-def send_question_cbd() -> str:
-    return _create_callback_data(CallbackDataType.SEND_QUESTION)
-
-
-def start_cbd(start_payload: str) -> str:
-    return _create_callback_data(CallbackDataType.START, start_payload)
-
-
-def get_in_cbd(get_in_payload: str) -> str:
-    return _create_callback_data(CallbackDataType.GET_IN, get_in_payload)
-
-
-callbacks = {
-    'help': help_cbd,
-    'send_question': send_question_cbd,
-    'start': start_cbd,
-    'get_in': get_in_cbd,
-}
 
 
 def callback(update: Update, context: CallbackContext):
@@ -67,6 +21,9 @@ def callback(update: Update, context: CallbackContext):
     def alert(text: str):
         context.bot.answer_callback_query(callback_query_id=query.id, text=text, show_alert=True)
 
+    def edit_message(text: str, reply_markup: Optional[ReplyMarkup] = None):
+        context.bot.editMessageText(text, inline_message_id=query.inline_message_id, reply_markup=reply_markup)
+
     print("received: ", data)
     data_type, payloads = _restore_callback_data(data)
     if CallbackDataType.HELP.value == data_type:
@@ -76,7 +33,11 @@ def callback(update: Update, context: CallbackContext):
     elif CallbackDataType.GET_IN.value == data_type:
         [game_id] = payloads
         game = Game.get_instance(game_id)
-        game.get_in(MyUser.new(user.id, user.first_name), alert)
+
+        def edit_game_inline():
+            edit_message(callback_strings.edit_text(game), create_inline_markup(game))
+
+        game.get_in(MyUser.new(user.id, user.first_name), alert, edit_game_inline)
     elif CallbackDataType.START.value == data_type:
         [game_id] = payloads
         starter_id = user.id

@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable, List
+from typing import Optional, Union, Callable
 
 
 class StringsTextBtn:
@@ -13,17 +13,20 @@ class Commands:
 
 
 class Callbacks:
-    def __init__(self, not_found_alert: str):
+    def __init__(self, not_found_alert: str, edit_text: Callable[[any], str]):
         self.not_found_alert = not_found_alert
+        self.edit_text = edit_text
 
 
-def create_game_inline_query_text(inviter: str, members: List[str]):
+def create_game_inline_query_text(game) -> str:
+    inviter = game.inviter.name
+    members = game.members
     text = "سلام\n\n" \
            "شما توسط {} به دعوت بازی جرات حقیقت شده‌اید\n\n" \
            "در صورت تمایل به بازی کردن، دکمه 'منم هستم' را بزنید\n\n" \
            "افراد حاضر در بازی:\n\n".format(inviter)
     for i, m in enumerate(members, start=1):
-        text += "{}: {} \n".format(i, m)
+        text += "{}: {} \n".format(i, m.name)
     return text
 
 
@@ -66,7 +69,8 @@ strings: Strings = Strings(
         )
     ),
     Callbacks(
-        'ان شا اللّه بزودی آماده می‌شه :))'
+        'ان شا اللّه بزودی آماده می‌شه :))',
+        create_game_inline_query_text
     ),
     Inline(
         "ارسال",

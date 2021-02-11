@@ -63,7 +63,8 @@ class Game(Entity):
     def _convert_tuple(cls, t: Tuple[str, str, str, str, str]) -> 'Game':
         game = cls.__new__(cls)
         game.game_id = t[0]
-        game.inviter_id = t[1]
+        inviter_id = t[1]
+        game.inviter = cls.instances[int(inviter_id)]
         game.is_active = t[2]
         game.created_at = t[3]
         game.deleted_at = t[4]
@@ -83,10 +84,10 @@ class Game(Entity):
 
         # todo
 
-    def get_in(self, user: MyUser, alert: Callable[[str], None]):
+    def get_in(self, user: MyUser, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if any(m.id == user.id for m in self.members):
             alert(game_strings.alert.already_got_in)
             return
         self.add_member(user.id)
         alert(game_strings.alert.successfully_got_in)
-        # todo edit message
+        edit_game_inline()

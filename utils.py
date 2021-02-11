@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from telegram import InlineKeyboardButton
 
-from bot.callback import callbacks
+from bot.callback_data import callbacks
 
 
 def build_menu(buttons: List[str], n_cols: int, header_buttons: Optional[List[str]] = None,

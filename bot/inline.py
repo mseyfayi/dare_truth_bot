@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from telegram import Update, InlineQueryResultArticle, ParseMode, InputTextMessageContent, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
@@ -14,14 +13,13 @@ inline_strings = strings.inline
 
 def inline(update: Update, context: CallbackContext):
     user = update.inline_query.from_user
-    name = user.first_name
     game = Game(MyUser.new(user.id, user.first_name))
-    article = create_article(name, [name], game.game_id)
+    article = create_article(game)
     context.bot.answer_inline_query(update.inline_query.id, [article])
 
 
-def create_article(name: str, members: List[str], game_id: str) -> InlineQueryResultArticle:
-    content = InputTextMessageContent(inline_strings.query_result.text(name, members), parse_mode=ParseMode.MARKDOWN)
+def create_inline_markup(game: Game):
+    game_id = game.game_id
     buttons = inline_strings.query_result.buttons
     start_payload = "{}".format(game_id)
     get_in_payload = "{}".format(game_id)
@@ -30,5 +28,11 @@ def create_article(name: str, members: List[str], game_id: str) -> InlineQueryRe
         create_inline_button(buttons, 'get_in', callback_data_creator_payload=get_in_payload)
     ]
     reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
+    return reply_markup
+
+
+def create_article(game: Game) -> InlineQueryResultArticle:
+    content = InputTextMessageContent(inline_strings.query_result.text(game), parse_mode=ParseMode.MARKDOWN)
+    reply_markup = create_inline_markup(game)
     article = InlineQueryResultArticle(str(uuid.uuid4()), inline_strings.button, content, reply_markup=reply_markup)
     return article
