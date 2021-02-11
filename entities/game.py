@@ -1,10 +1,10 @@
-from datetime import datetime
 import random
+from datetime import datetime
 from typing import Callable, Tuple, List, Optional, Union, Dict
 
 from entities.database import db_insert, db_select, db_update
-from strings import strings
 from entities.user import MyUser
+from strings import strings
 
 MINIMUM_MEMBER = 2
 game_strings = strings.game
@@ -20,6 +20,8 @@ class Game:
         self.created_at: datetime = datetime.now()
         self.deleted_at: Optional[datetime] = None
         self.members: List[MyUser] = [inviter]
+        # user_id -> question_id
+        self.member_questions: Dict[int, int] = {}
 
         self.game_id = self.__class__._insert(self)
         self.__class__.instances[self.game_id] = self
@@ -51,6 +53,12 @@ class Game:
         return [cls._convert_tuple_member(m) for m in select_result]
 
     @classmethod
+    def _fetch_member_questions(cls, game_id: int) -> Dict[int, int]:
+        columns = ('member_id', 'question_id')
+        select_result = db_select('member', column_names=columns, where_clause='game_id=' + str(game_id))
+        return {m[0]: m[1] for m in select_result}
+
+    @classmethod
     def load_all(cls):
         game_tuples: List[Tuple] = db_select('game')
 
@@ -59,7 +67,9 @@ class Game:
             if game.deleted_at or game.is_active == 0:
                 continue
             members: List[MyUser] = cls._fetch_members(game.game_id)
+            member_questions: Dict[int, int] = cls._fetch_member_questions(game.game_id)
             game.members = members
+            game.member_questions = member_questions
             cls.instances[game.game_id] = game
 
     @classmethod
