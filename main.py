@@ -5,11 +5,13 @@ from bot.callback import callback
 from bot.commands import start
 from entities.game import Game
 from bot.inline import inline
+from entities.question import Question
 from entities.user import MyUser
 
 
 def load_data():
     MyUser.load_all()
+    Question.load_all()
     Game.load_all()
 
 
