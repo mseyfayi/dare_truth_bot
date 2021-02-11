@@ -35,7 +35,7 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_game_inline():
-            edit_message(callback_strings.edit_text(game), create_inline_markup(game))
+            edit_message(callback_strings.edit_text1(game), create_inline_markup(game))
 
         game.get_in(MyUser.new(user.id, user.first_name), alert, edit_game_inline)
     elif CallbackDataType.START.value == data_type:
