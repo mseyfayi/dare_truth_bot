@@ -13,9 +13,12 @@ class Commands:
 
 
 class Callbacks:
-    def __init__(self, not_found_alert: str, edit_text: Callable[[any], str]):
+    def __init__(self, not_found_alert: str, edit_text1: Callable[[any], str], edit_text2: StringsTextBtn,
+                 edit_text3: StringsTextBtn):
         self.not_found_alert = not_found_alert
-        self.edit_text = edit_text
+        self.edit_text1 = edit_text1
+        self.edit_text2 = edit_text2
+        self.edit_text3 = edit_text3
 
 
 def create_game_inline_query_text(game) -> str:
@@ -27,6 +30,30 @@ def create_game_inline_query_text(game) -> str:
            "افراد حاضر در بازی:\n\n".format(inviter)
     for i, m in enumerate(members, start=1):
         text += "{}: {} \n".format(i, m.name)
+    return text
+
+
+def create_game_choose_text(game) -> str:
+    user = game.turn.name
+    text = "نوبت {}:\n\n" \
+           "یکی رو انتخاب کن:\n\n".format(user)
+    return text
+
+
+dtc = {
+    'dare': 'جرات',
+    'truth': 'حقیقت',
+    'chat': 'چت'
+}
+
+
+def create_game_answer_text(game, dtc_type: str, question: str) -> str:
+    user = game.turn.name
+    dtc_text = dtc[dtc_type]
+    text = "کاربر '{}' {} رو انتخاب کرد\n\n" \
+           "متن سوال:\n\n" \
+           "{}\n\n" \
+           "بعد جواب دادن دکمه جواب دادم رو بزن\n\n".format(user, dtc_text, question)
     return text
 
 
@@ -70,7 +97,18 @@ strings: Strings = Strings(
     ),
     Callbacks(
         'ان شا اللّه بزودی آماده می‌شه :))',
-        create_game_inline_query_text
+        create_game_inline_query_text,
+        StringsTextBtn(
+            create_game_choose_text,
+            dtc
+        ),
+        StringsTextBtn(
+            create_game_answer_text,
+            {
+                'answered': 'جواب دادم',
+            }
+        )
+
     ),
     Inline(
         "ارسال",
