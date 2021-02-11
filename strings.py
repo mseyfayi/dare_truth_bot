@@ -63,11 +63,13 @@ class Inline:
 
 
 class GameAlerts:
-    def __init__(self, start_minimum: str, start_non_inviter: str, already_got_in: str, successfully_got_in: str):
+    def __init__(self, start_minimum: str, start_non_inviter: str, already_got_in: str, successfully_got_in: str,
+                 not_ur_turn: str):
         self.start_minimum = start_minimum
         self.start_non_inviter = start_non_inviter
         self.already_got_in = already_got_in
         self.successfully_got_in = successfully_got_in
+        self.not_ur_turn = not_ur_turn
 
 
 class Game:
@@ -124,7 +126,8 @@ strings: Strings = Strings(
             "باید تعداد بیشتری عضو بشن",
             "فقط دعوت‌کننده است که میتونه شروع کنه",
             "شما قبلا عضو شدی",
-            "صبر کن تا دعوت‌کننده شروع کنه"
+            "صبر کن تا دعوت‌کننده شروع کنه",
+            "اکنون نوبت شما نیست"
         )
     )
 )

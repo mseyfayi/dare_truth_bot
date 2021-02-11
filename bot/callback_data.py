@@ -9,7 +9,7 @@ class CallbackDataType(Enum):
     SEND_QUESTION = "NOT_FOUND"
     DARE = "DARE"
     TRUTH = "TRUTH"
-    CHAT = "CHAT"
+    CHOOSE = "CHOOSE"
 
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
@@ -52,6 +52,10 @@ def truth_cbd(payload: str):
     return _create_callback_data(CallbackDataType.TRUTH, payload)
 
 
+def choose_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.CHOOSE, payload)
+
+
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
@@ -59,4 +63,5 @@ callbacks = {
     'get_in': get_in_cbd,
     'dare': dare_cbd,
     'truth': truth_cbd,
+    'choose': choose_cbd
 }

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Callable, Tuple, List, Optional, Union, Dict
 
 from entities.database import db_insert, db_select, db_update
+from entities.question import Question
 from entities.user import MyUser
 from strings import strings
 
@@ -21,7 +22,7 @@ class Game:
         self.deleted_at: Optional[datetime] = None
         self.members: List[MyUser] = [inviter]
         # user_id -> question_id
-        self.member_questions: Dict[int, int] = {}
+        self.member_questions: Dict[int, List[int]] = {}
 
         self.game_id = self.__class__._insert(self)
         self.__class__.instances[self.game_id] = self
@@ -53,10 +54,16 @@ class Game:
         return [cls._convert_tuple_member(m) for m in select_result]
 
     @classmethod
-    def _fetch_member_questions(cls, game_id: int) -> Dict[int, int]:
+    def _fetch_member_questions(cls, game_id: int) -> Dict[int, List[int]]:
         columns = ('member_id', 'question_id')
         select_result = db_select('member', column_names=columns, where_clause='game_id=' + str(game_id))
-        return {m[0]: m[1] for m in select_result}
+        new_dict: Dict[int, List[int]] = {}
+        for m in select_result:
+            if new_dict[m[0]]:
+                new_dict[m[0]].append(m[1])
+            else:
+                new_dict[m[0]] = []
+        return new_dict
 
     @classmethod
     def load_all(cls):
@@ -67,7 +74,7 @@ class Game:
             if game.deleted_at or game.is_active == 0:
                 continue
             members: List[MyUser] = cls._fetch_members(game.game_id)
-            member_questions: Dict[int, int] = cls._fetch_member_questions(game.game_id)
+            member_questions: Dict[int, List[int]] = cls._fetch_member_questions(game.game_id)
             game.members = members
             game.member_questions = member_questions
             cls.instances[game.game_id] = game
@@ -95,6 +102,16 @@ class Game:
         self.turn = random.choice(self.members)
         db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.game_id))
 
+    def next_question(self) -> Question:
+        turn_asked_questions = self.member_questions[self.turn.id]
+        remained_questions: List[Question] = []
+        for qid, value in Question.instances.items():
+            if qid not in turn_asked_questions:
+                remained_questions.append(value)
+        next_q = random.choice(remained_questions)
+        self.member_questions[self.turn.id].append(next_q.id)
+        return next_q
+
     def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if starter_id != self.inviter.id:
             alert(game_strings.alert.start_non_inviter)
@@ -111,6 +128,13 @@ class Game:
         self.add_member(user.id)
         alert(game_strings.alert.successfully_got_in)
         edit_game_inline()
+
+    def choose(self, user_id: int, alert: Callable[[str], None], edit_question: Callable[[MyUser, Question], None]):
+        if self.turn.id != user_id:
+            alert(game_strings.alert.not_ur_turn)
+            return
+        next_q: Question = self.next_question()
+        edit_question(self.turn, next_q)
 
     @classmethod
     def get_instance(cls, entity_id: int) -> Union[None, 'Game']:
