@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 from typing import Callable, Tuple, List, Optional
 
 from database import db_insert, db_select, Entity
@@ -78,12 +79,17 @@ class Game(Entity):
         values = (self.game_id, member_id)
         db_insert('member', columns, values)
 
+    def next_turn(self):
+        self.turn = random.choice(self.members)
+
     def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if starter_id != self.inviter.id:
             alert(game_strings.alert.start_non_inviter)
-        if len(self.members) < MINIMUM_MEMBER:
+        elif len(self.members) < MINIMUM_MEMBER:
             alert(game_strings.alert.start_minimum)
-        edit_game_inline()
+        else:
+            self.next_turn()
+            edit_game_inline()
 
     def get_in(self, user: MyUser, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if any(m.id == user.id for m in self.members):

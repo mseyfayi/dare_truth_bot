@@ -7,6 +7,9 @@ class CallbackDataType(Enum):
     GET_IN = "GET_IN"
     HELP = "NOT_FOUND"
     SEND_QUESTION = "NOT_FOUND"
+    DARE = "DARE"
+    TRUTH = "TRUTH"
+    CHAT = "CHAT"
 
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
@@ -41,9 +44,24 @@ def get_in_cbd(get_in_payload: str) -> str:
     return _create_callback_data(CallbackDataType.GET_IN, get_in_payload)
 
 
+def dare_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.DARE, payload)
+
+
+def truth_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.TRUTH, payload)
+
+
+def chat_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.CHAT, payload)
+
+
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
     'start': start_cbd,
     'get_in': get_in_cbd,
+    'dare': dare_cbd,
+    'chat': chat_cbd,
+    'truth': truth_cbd,
 }

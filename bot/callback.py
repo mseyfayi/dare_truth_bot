@@ -1,6 +1,6 @@
 from typing import Optional
 
-from telegram import Update, ReplyMarkup
+from telegram import Update, ReplyMarkup, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
 from bot.callback_data import CallbackDataType, _restore_callback_data
@@ -8,8 +8,17 @@ from bot.inline import create_inline_markup
 from game import Game
 from strings import strings
 from user import MyUser
+from utils import create_inline_button, build_menu
 
 callback_strings = strings.callbacks
+
+
+def create_choice_markup(game_id: int) -> ReplyMarkup:
+    buttons = callback_strings.edit_text2.buttons
+    payload = "{}".format(game_id)
+    button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload) for t in buttons.keys()]
+    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
+    return reply_markup
 
 
 def callback(update: Update, context: CallbackContext):
@@ -42,6 +51,10 @@ def callback(update: Update, context: CallbackContext):
         [game_id] = payloads
         starter_id = user.id
         game = Game.get_instance(game_id)
-        game.start(starter_id, alert)
+
+        def edit_game_inline():
+            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id))
+
+        game.start(starter_id, alert, edit_game_inline)
     else:
         print("koft1")
