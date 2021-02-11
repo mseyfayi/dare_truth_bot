@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from database import db_select, Entity, db_insert, db_update
+from entities.database import db_select, Entity, db_insert, db_update
 
 
 class MyUser(Entity):

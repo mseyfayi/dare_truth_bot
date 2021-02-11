@@ -3,9 +3,9 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQu
 
 from bot.callback import callback
 from bot.commands import start
-from game import Game
+from entities.game import Game
 from bot.inline import inline
-from user import MyUser
+from entities.user import MyUser
 
 
 def load_data():

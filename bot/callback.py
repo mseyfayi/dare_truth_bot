@@ -5,9 +5,9 @@ from telegram.ext import CallbackContext
 
 from bot.callback_data import CallbackDataType, _restore_callback_data
 from bot.inline import create_inline_markup
-from game import Game
+from entities.game import Game
 from strings import strings
-from user import MyUser
+from entities.user import MyUser
 from utils import create_inline_button, build_menu
 
 callback_strings = strings.callbacks

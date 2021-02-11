@@ -3,9 +3,9 @@ import uuid
 from telegram import Update, InlineQueryResultArticle, ParseMode, InputTextMessageContent, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
-from game import Game
+from entities.game import Game
 from strings import strings
-from user import MyUser
+from entities.user import MyUser
 from utils import build_menu, create_inline_button
 
 inline_strings = strings.inline

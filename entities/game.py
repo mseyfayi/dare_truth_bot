@@ -2,9 +2,9 @@ from datetime import datetime
 import random
 from typing import Callable, Tuple, List, Optional
 
-from database import db_insert, db_select, Entity
+from entities.database import db_insert, db_select, Entity
 from strings import strings
-from user import MyUser
+from entities.user import MyUser
 
 MINIMUM_MEMBER = 2
 game_strings = strings.game
