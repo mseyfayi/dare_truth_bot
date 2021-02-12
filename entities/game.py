@@ -54,15 +54,12 @@ class Game:
         return [cls._convert_tuple_member(m) for m in select_result]
 
     @classmethod
-    def _fetch_member_questions(cls, game_id: int) -> Dict[int, List[int]]:
+    def _fetch_member_questions(cls, game_id: int, members: List[MyUser]) -> Dict[int, List[int]]:
         columns = ('member_id', 'question_id')
         select_result = db_select('game_member_question', column_names=columns, where_clause='game_id=' + str(game_id))
-        new_dict: Dict[int, List[int]] = {}
+        new_dict: Dict[int, List[int]] = {m.id: [] for m in members}
         for m in select_result:
-            if new_dict[m[0]]:
-                new_dict[m[0]].append(m[1])
-            else:
-                new_dict[m[0]] = []
+            new_dict[m[0]].append(m[1])
         return new_dict
 
     @classmethod
@@ -74,7 +71,7 @@ class Game:
             if game.deleted_at or game.is_active == 0:
                 continue
             members: List[MyUser] = cls._fetch_members(game.game_id)
-            member_questions: Dict[int, List[int]] = cls._fetch_member_questions(game.game_id)
+            member_questions: Dict[int, List[int]] = cls._fetch_member_questions(game.game_id, members)
             game.members = members
             game.member_questions = member_questions
             cls.instances[game.game_id] = game
