@@ -5,8 +5,9 @@ from telegram import InlineKeyboardButton
 from bot.callback_data import callbacks
 
 
-def build_menu(buttons: List[str], n_cols: int, header_buttons: Optional[List[str]] = None,
-               footer_buttons: Optional[List[str]] = None):
+def build_menu(buttons: List[InlineKeyboardButton], n_cols: int,
+               header_buttons: Optional[List[InlineKeyboardButton]] = None,
+               footer_buttons: Optional[List[InlineKeyboardButton]] = None):
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
     if header_buttons:
         menu.insert(0, header_buttons)
