@@ -56,7 +56,7 @@ class Game:
     @classmethod
     def _fetch_member_questions(cls, game_id: int) -> Dict[int, List[int]]:
         columns = ('member_id', 'question_id')
-        select_result = db_select('member', column_names=columns, where_clause='game_id=' + str(game_id))
+        select_result = db_select('game_member_question', column_names=columns, where_clause='game_id=' + str(game_id))
         new_dict: Dict[int, List[int]] = {}
         for m in select_result:
             if new_dict[m[0]]:
@@ -92,10 +92,10 @@ class Game:
         game.deleted_at = t[5]
         return game
 
-    def add_member(self, member_id):
-        self.members.append(member_id)
+    def add_member(self, member: MyUser):
+        self.members.append(member)
         columns = ('game_id', 'member_id')
-        values = (self.game_id, member_id)
+        values = (self.game_id, member.id)
         db_insert('member', columns, values)
 
     def next_turn(self):
@@ -125,7 +125,7 @@ class Game:
         if any(m.id == user.id for m in self.members):
             alert(game_strings.alert.already_got_in)
             return
-        self.add_member(user.id)
+        self.add_member(user)
         alert(game_strings.alert.successfully_got_in)
         edit_game_inline()
 
