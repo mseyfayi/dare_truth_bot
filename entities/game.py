@@ -102,15 +102,17 @@ class Game:
         self.turn = random.choice(self.members)
         db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.game_id))
 
-    def next_question(self) -> Question:
+    def next_question(self, q_type: str) -> Question:
         turn_asked_questions = self.member_questions[self.turn.id]
-        remained_questions: List[Question] = []
-        for qid, value in Question.instances.items():
-            if qid not in turn_asked_questions:
-                remained_questions.append(value)
+        remained_questions: List[Question] = [q for q in Question.instances.values()
+                                              if q.type == q_type and q.id not in turn_asked_questions]
         next_q = random.choice(remained_questions)
         self.member_questions[self.turn.id].append(next_q.id)
         return next_q
+
+    def init_member_question(self):
+        for m in self.members:
+            self.member_questions[m.id] = []
 
     def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
         if starter_id != self.inviter.id:
@@ -118,6 +120,7 @@ class Game:
         elif len(self.members) < MINIMUM_MEMBER:
             alert(game_strings.alert.start_minimum)
         else:
+            self.init_member_question()
             self.next_turn()
             edit_game_inline()
 
@@ -129,11 +132,12 @@ class Game:
         alert(game_strings.alert.successfully_got_in)
         edit_game_inline()
 
-    def choose(self, user_id: int, alert: Callable[[str], None], edit_question: Callable[[MyUser, Question], None]):
+    def choose(self, user_id: int, q_type: str, alert: Callable[[str], None],
+               edit_question: Callable[[MyUser, Question], None]):
         if self.turn.id != user_id:
             alert(game_strings.alert.not_ur_turn)
             return
-        next_q: Question = self.next_question()
+        next_q: Question = self.next_question(q_type)
         edit_question(self.turn, next_q)
 
     def answer(self, user_id: int, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
