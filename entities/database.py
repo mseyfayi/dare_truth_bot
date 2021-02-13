@@ -20,9 +20,11 @@ class AutoIncreaseId:
         return temp
 
     @classmethod
-    def get_instance(cls):
+    def get_instance(cls) -> 'AutoIncreaseId':
         if not cls.instance:
-            cls.instance = cls.__new__(cls)
+            new_obj = cls.__new__(cls)
+            new_obj.auto_increase_id = 0
+            cls.instance = new_obj
         return cls.instance
 
 

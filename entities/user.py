@@ -22,6 +22,7 @@ class MyUser:
             return user
         elif instance.name != name:
             instance.update(name)
+            return instance
         else:
             return instance
 
