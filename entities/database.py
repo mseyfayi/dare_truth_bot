@@ -21,6 +21,8 @@ class AutoIncreaseId:
 
     @classmethod
     def get_instance(cls):
+        if not cls.instance:
+            cls.instance = cls.__new__(cls)
         return cls.instance
 
 
