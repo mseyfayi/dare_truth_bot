@@ -1,44 +1,16 @@
-from abc import ABC
-from typing import List, Union, Tuple, Optional, Dict
+from typing import List, Union, Tuple, Optional
 
 import mysql.connector
 from decouple import config
 
-ignore_db = config("IGNORE_DB")
+mydb = mysql.connector.connect(
+    host=config("DB_HOST"),
+    user=config("DB_USER"),
+    password=config("DB_PASS"),
+    database=config("DB_SCHEMA")
+)
 
-
-class AutoIncreaseId:
-    instance: 'AutoIncreaseId' = None
-
-    def __init__(self):
-        self.auto_increase_id: int = 0
-        raise NotImplementedError()
-
-    def get_ai_id(self) -> int:
-        temp = self.auto_increase_id
-        self.auto_increase_id = temp + 1
-        return temp
-
-    @classmethod
-    def get_instance(cls) -> 'AutoIncreaseId':
-        if not cls.instance:
-            new_obj = cls.__new__(cls)
-            new_obj.auto_increase_id = 0
-            cls.instance = new_obj
-        return cls.instance
-
-
-cursor = None
-
-if not ignore_db:
-    mydb = mysql.connector.connect(
-        host=config("DB_HOST"),
-        user=config("DB_USER"),
-        password=config("DB_PASS"),
-        database=config("DB_SCHEMA")
-    )
-
-    cursor = mydb.cursor()
+cursor = mydb.cursor()
 
 
 def csv(ll: Union[Tuple, List]) -> str:
@@ -55,8 +27,6 @@ def join_clause(to_join: Tuple[str, str], table_name: str, table_id: str) -> str
 
 
 def db_insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tuple]]) -> int:
-    if ignore_db:
-        return AutoIncreaseId.get_instance().get_ai_id()
     sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, csv(column_names), csv4values(values))
     print("insert: ", sql)
     cursor.execute(sql, values)
@@ -65,8 +35,6 @@ def db_insert(table_name: str, column_names: Tuple, values: Union[Tuple, List[Tu
 
 
 def db_update(table_name: str, column_value: Tuple[str, str], where_clause: str):
-    if ignore_db:
-        return
     sql = "UPDATE {} SET {}={} WHERE {}".format(table_name, column_value[0], column_value[1], where_clause)
     print("update: ", sql)
     cursor.execute(sql)
@@ -80,8 +48,6 @@ def db_select(
         join_table_table_id: Optional[Tuple[str, str]] = None,
         table_id_to_join: Optional[str] = None
 ) -> List[Tuple]:
-    if ignore_db:
-        return []
     column_names2 = csv(column_names) if column_names else '*'
     if join_table_table_id and table_id_to_join:
         from_clause = join_clause(join_table_table_id, table_name, table_id_to_join)
