@@ -24,14 +24,17 @@ class AutoIncreaseId:
         return cls.instance
 
 
-mydb = mysql.connector.connect(
-    host=config("DB_HOST"),
-    user=config("DB_USER"),
-    password=config("DB_PASS"),
-    database=config("DB_SCHEMA")
-)
+cursor = None
 
-cursor = mydb.cursor()
+if not ignore_db:
+    mydb = mysql.connector.connect(
+        host=config("DB_HOST"),
+        user=config("DB_USER"),
+        password=config("DB_PASS"),
+        database=config("DB_SCHEMA")
+    )
+
+    cursor = mydb.cursor()
 
 
 def csv(ll: Union[Tuple, List]) -> str:
