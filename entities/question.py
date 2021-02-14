@@ -1,10 +1,10 @@
-from typing import List, Tuple, Union, Dict
+from typing import Union, Dict
 
-from entities.database import db_select, db_insert
+from entities.mongodb import mdb_select, mdb_insert
 
 
 class Question:
-    instances: Dict[int, 'Question'] = {}
+    instances: Dict[str, 'Question'] = {}
 
     def __init__(self, text: str, q_type: str):
         self.text = text
@@ -13,29 +13,32 @@ class Question:
         self.__class__.instances[self.id] = self
 
     @classmethod
-    def _insert(cls, question: 'Question') -> int:
-        columns = ('text', 'type')
-        values = (question.text, question.type)
-        return db_insert('question', columns, values)
+    def _insert(cls, question: 'Question') -> str:
+        return mdb_insert('question', question.convert_into_dict())
+
+    def convert_into_dict(self) -> Dict[str, str]:
+        return {
+            'text': self.text,
+            'type': self.type,
+        }
 
     @classmethod
     def load_all(cls):
-        q_tuples: List[Tuple] = db_select('question')
-
-        for t in q_tuples:
-            question = cls._convert_tuple(t)
+        questions = mdb_select('question')
+        for q in questions:
+            question = cls._convert_dict_into_question(q)
             cls.instances[question.id] = question
 
     @classmethod
-    def _convert_tuple(cls, t: Tuple[str, str, str]) -> 'Question':
-        question = cls.__new__(cls)
-        question.id = t[0]
-        question.text = t[1]
-        question.type = t[2]
-        return question
+    def get_instance(cls, entity_id: str) -> Union[None, 'Question']:
+        if entity_id in cls.instances:
+            return cls.instances[entity_id]
+        return None
 
     @classmethod
-    def get_instance(cls, entity_id: int) -> Union[None, 'Question']:
-        if int(entity_id) in cls.instances:
-            return cls.instances[int(entity_id)]
-        return None
+    def _convert_dict_into_question(cls, q: Dict[str, str]) -> 'Question':
+        question = cls.__new__(cls)
+        question.id = q["_id"]
+        question.text = q['text']
+        question.type = q['type']
+        return question
