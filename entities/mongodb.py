@@ -38,7 +38,7 @@ def mdb_insert(collection_name: str, data: Dict[str, str]) -> str:
     return str(x.inserted_id)
 
 
-def mdb_update(collection_name: str, new_data: Dict[str, str], query: Dict[str, any]):
+def mdb_update(collection_name: str, new_data: Dict[str, any], query: Dict[str, any]):
     collection = get_collection(collection_name)
     new_data = {"$set": new_data}
     collection.update_one(query, new_data)

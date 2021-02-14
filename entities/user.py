@@ -4,15 +4,15 @@ from entities.database import db_select, db_insert, db_update
 
 
 class MyUser:
-    instances: Dict[int, 'MyUser'] = {}
+    instances: Dict[str, 'MyUser'] = {}
 
     def __init__(self):
-        self.id = None
-        self.name = None
+        self.id: str = ''
+        self.name: str = ''
         raise NotImplementedError()
 
     @classmethod
-    def new(cls, user_id: int, name: str) -> 'MyUser':
+    def new(cls, user_id: str, name: str) -> 'MyUser':
         instance = cls.get_instance(user_id)
         if not instance:
             user = cls.__new__(cls)
@@ -54,7 +54,13 @@ class MyUser:
         return user
 
     @classmethod
-    def get_instance(cls, entity_id: int) -> Union[None, 'MyUser']:
-        if int(entity_id) in cls.instances:
-            return cls.instances[int(entity_id)]
+    def get_instance(cls, entity_id: str) -> Union[None, 'MyUser']:
+        if entity_id in cls.instances:
+            return cls.instances[entity_id]
         return None
+
+    def convert_into_dict(self) -> Dict[str, str]:
+        return {
+            '_id': self.id,
+            'name': self.name
+        }

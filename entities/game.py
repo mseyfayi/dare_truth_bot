@@ -2,8 +2,9 @@ import random
 from datetime import datetime
 from typing import Callable, List, Optional, Union, Dict
 
-from entities.database import db_insert, db_update
-from entities.mongodb import mdb_insert, mdb_select
+from bson import ObjectId
+
+from entities.mongodb import mdb_insert, mdb_select, mdb_update
 from entities.question import Question
 from entities.user import MyUser
 from strings import strings
@@ -23,7 +24,7 @@ class Game:
         self.deleted_at: Optional[datetime] = None
         self.members: List[MyUser] = [inviter]
         # user_id -> question_id
-        self.member_questions: Dict[int, List[int]] = {}
+        self.member_questions: Dict[str, List[str]] = {}
 
         self.id = self.__class__._insert(self)
         self.__class__.instances[self.id] = self
@@ -57,8 +58,7 @@ class Game:
         game.id = str(d['_id'])
         game.inviter = MyUser.instances[d['inviter_id']]
         game.turn = MyUser.instances[d['turn_id']] if d['turn_id'] else None
-        members = d['members']
-        game.members = [MyUser.instances[x] for x in members]
+        game.members = [MyUser.instances[x] for x in d['members']]
         game.member_questions = d['member_questions']
         game.is_active = d['is_active']
         game.created_at = d['created_at']
@@ -67,20 +67,23 @@ class Game:
 
     def add_member(self, member: MyUser):
         self.members.append(member)
-        columns = ('game_id', 'member_id')
-        values = (self.id, member.id)
-        db_insert('member', columns, values)
+        mdb_update('game', {'members': [m.id for m in self.members]}, {'_id': ObjectId(self.id)})
 
     def next_turn(self):
         self.turn = random.choice(self.members)
-        db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.id))
+        mdb_update('game', {'turn_id': self.turn.id}, {'_id': ObjectId(self.id)})
 
     def next_question(self, q_type: str) -> Question:
-        turn_asked_questions = self.member_questions[self.turn.id]
+        if self.turn.id not in self.member_questions:
+            self.member_questions[str(self.turn.id)] = []
+
+        turn_asked_questions = self.member_questions[str(self.turn.id)]
+
         remained_questions: List[Question] = [q for q in Question.instances.values()
                                               if q.type == q_type and q.id not in turn_asked_questions]
         next_q = random.choice(remained_questions)
-        self.member_questions[self.turn.id].append(next_q.id)
+        self.member_questions[str(self.turn.id)].append(next_q.id)
+        mdb_update('game', {'member_questions': self.member_questions}, {'_id': ObjectId(self.id)})
         return next_q
 
     def init_member_question(self):
