@@ -1,8 +1,9 @@
 import random
 from datetime import datetime
-from typing import Callable, Tuple, List, Optional, Union, Dict
+from typing import Callable, List, Optional, Union, Dict
 
-from entities.database import db_insert, db_select, db_update
+from entities.database import db_insert, db_update
+from entities.mongodb import mdb_insert, mdb_select
 from entities.question import Question
 from entities.user import MyUser
 from strings import strings
@@ -12,7 +13,7 @@ game_strings = strings.game
 
 
 class Game:
-    instances: Dict[int, 'Game'] = {}
+    instances: Dict[str, 'Game'] = {}
 
     def __init__(self, inviter: MyUser):
         self.inviter: MyUser = inviter
@@ -29,75 +30,50 @@ class Game:
         print("game created: ", self)
 
     @classmethod
-    def _insert(cls, game: 'Game') -> int:
-        columns1 = ('inviter_id', 'is_active', 'created_at')
-        values1 = (game.inviter.id, game.is_active, game.created_at)
-        game_id = db_insert('game', columns1, values1)
+    def _insert(cls, game: 'Game') -> str:
+        return mdb_insert('game', game.convert_into_dict())
 
-        columns2 = ('member_id', 'game_id')
-        values2 = (game.inviter.id, game_id)
-        db_insert('member', columns2, values2)
-
-        return game_id
-
-    @classmethod
-    def _convert_tuple_member(cls, t: Tuple[str, str]) -> MyUser:
-        return MyUser.new(int(t[0]), t[1])
-
-    @classmethod
-    def _fetch_members(cls, game_id: int) -> List[MyUser]:
-        columns = ('id', 'name')
-        join_table = ('user', 'id')
-        table_join_id = 'member_id'
-        select_result = db_select('member', column_names=columns, join_table_table_id=join_table,
-                                  table_id_to_join=table_join_id, where_clause='game_id=' + str(game_id))
-        return [cls._convert_tuple_member(m) for m in select_result]
-
-    @classmethod
-    def _fetch_member_questions(cls, game_id: int, members: List[MyUser]) -> Dict[int, List[int]]:
-        columns = ('member_id', 'question_id')
-        select_result = db_select('game_member_question', column_names=columns, where_clause='game_id=' + str(game_id))
-        new_dict: Dict[int, List[int]] = {m.id: [] for m in members}
-        for m in select_result:
-            new_dict[m[0]].append(m[1])
-        return new_dict
+    def convert_into_dict(self) -> Dict[str, str]:
+        return {
+            "inviter_id": self.inviter.id,
+            'turn_id': self.turn.id if self.turn else None,
+            'is_active': self.is_active,
+            'created_at': self.created_at,
+            'deleted_at': self.deleted_at,
+            'members': [x.id for x in self.members],
+            'member_questions': self.member_questions,
+        }
 
     @classmethod
     def load_all(cls):
-        game_tuples: List[Tuple] = db_select('game')
-
-        for t in game_tuples:
-            game = cls._convert_tuple(t)
-            if game.deleted_at or game.is_active == 0:
-                continue
-            members: List[MyUser] = cls._fetch_members(game.game_id)
-            member_questions: Dict[int, List[int]] = cls._fetch_member_questions(game.game_id, members)
-            game.members = members
-            game.member_questions = member_questions
-            cls.instances[game.game_id] = game
+        games = mdb_select('game')
+        for g in games:
+            game = cls._convert_dict_into_game(g)
+            cls.instances[game.id] = game
 
     @classmethod
-    def _convert_tuple(cls, t: Tuple[str, str, str, str, str, str]) -> 'Game':
+    def _convert_dict_into_game(cls, d: Dict[str, any]) -> 'Game':
         game = cls.__new__(cls)
-        game.game_id = t[0]
-        inviter_id = t[1]
-        game.inviter = MyUser.instances[int(inviter_id)]
-        turn_id = t[2]
-        game.turn = MyUser.instances[int(turn_id)] if turn_id else None
-        game.is_active = t[3]
-        game.created_at = t[4]
-        game.deleted_at = t[5]
+        game.id = str(d['_id'])
+        game.inviter = MyUser.instances[d['inviter_id']]
+        game.turn = MyUser.instances[d['turn_id']] if d['turn_id'] else None
+        members = d['members']
+        game.members = [MyUser.instances[x] for x in members]
+        game.member_questions = d['member_questions']
+        game.is_active = d['is_active']
+        game.created_at = d['created_at']
+        game.deleted_at = d['deleted_at']
         return game
 
     def add_member(self, member: MyUser):
         self.members.append(member)
         columns = ('game_id', 'member_id')
-        values = (self.game_id, member.id)
+        values = (self.id, member.id)
         db_insert('member', columns, values)
 
     def next_turn(self):
         self.turn = random.choice(self.members)
-        db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.game_id))
+        db_update('game', ('turn_id', self.turn.id), 'id=' + str(self.id))
 
     def next_question(self, q_type: str) -> Question:
         turn_asked_questions = self.member_questions[self.turn.id]
@@ -145,7 +121,7 @@ class Game:
         edit_game_inline()
 
     @classmethod
-    def get_instance(cls, entity_id: int) -> Union[None, 'Game']:
-        if int(entity_id) in cls.instances:
-            return cls.instances[int(entity_id)]
+    def get_instance(cls, entity_id: str) -> Union[None, 'Game']:
+        if entity_id in cls.instances:
+            return cls.instances[entity_id]
         return None
