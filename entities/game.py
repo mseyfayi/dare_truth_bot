@@ -56,9 +56,9 @@ class Game:
     def _convert_dict_into_game(cls, d: Dict[str, any]) -> 'Game':
         game = cls.__new__(cls)
         game.id = str(d['_id'])
-        game.inviter = MyUser.instances[d['inviter_id']]
-        game.turn = MyUser.instances[d['turn_id']] if d['turn_id'] else None
-        game.members = [MyUser.instances[x] for x in d['members']]
+        game.inviter = MyUser.get_instance(d['inviter_id'])
+        game.turn = MyUser.get_instance(d['turn_id']) if d['turn_id'] else None
+        game.members = [MyUser.get_instance(x) for x in d['members']]
         game.member_questions = d['member_questions']
         game.is_active = d['is_active']
         game.created_at = d['created_at']

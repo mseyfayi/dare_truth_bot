@@ -13,6 +13,9 @@ def load_data():
     MyUser.load_all()
     Question.load_all()
     Game.load_all()
+    print("Games: ", Game.instances)
+    print("MyUser: ", MyUser.instances)
+    print("Question: ", Question.instances)
 
 
 if __name__ == '__main__':
