@@ -24,8 +24,8 @@ class Game:
         # user_id -> question_id
         self.member_questions: Dict[int, List[int]] = {}
 
-        self.game_id = self.__class__._insert(self)
-        self.__class__.instances[self.game_id] = self
+        self.id = self.__class__._insert(self)
+        self.__class__.instances[self.id] = self
         print("game created: ", self)
 
     @classmethod

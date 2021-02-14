@@ -19,7 +19,7 @@ def inline(update: Update, context: CallbackContext):
 
 
 def create_inline_markup(game: Game):
-    game_id = game.game_id
+    game_id = game.id
     buttons = inline_strings.query_result.buttons
     start_payload = "{}".format(game_id)
     get_in_payload = "{}".format(game_id)
