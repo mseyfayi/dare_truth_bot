@@ -91,7 +91,7 @@ class Game:
             self.member_questions[m.id] = []
 
     def start(self, starter_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
-        if starter_id != self.inviter.id:
+        if str(starter_id) != self.inviter.id:
             alert(game_strings.alert.start_non_inviter)
         elif len(self.members) < MINIMUM_MEMBER:
             alert(game_strings.alert.start_minimum)
@@ -108,16 +108,16 @@ class Game:
         alert(game_strings.alert.successfully_got_in)
         edit_game_inline()
 
-    def choose(self, user_id: int, q_type: str, alert: Callable[[str], None],
+    def choose(self, user_id: str, q_type: str, alert: Callable[[str], None],
                edit_question: Callable[[MyUser, Question], None]):
-        if self.turn.id != user_id:
+        if self.turn.id != str(user_id):
             alert(game_strings.alert.not_ur_turn)
             return
         next_q: Question = self.next_question(q_type)
         edit_question(self.turn, next_q)
 
-    def answer(self, user_id: int, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
-        if self.turn.id != user_id:
+    def answer(self, user_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
+        if self.turn.id != str(user_id):
             alert(game_strings.alert.not_ur_turn)
             return
         self.next_turn()
