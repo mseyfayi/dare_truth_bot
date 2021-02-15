@@ -36,7 +36,7 @@ class Game:
 
     def convert_into_dict(self) -> Dict[str, str]:
         return {
-            "inviter_id": self.inviter.id,
+            "inviter_id": str(self.inviter.id),
             'turn_id': self.turn.id if self.turn else None,
             'is_active': self.is_active,
             'created_at': self.created_at,
