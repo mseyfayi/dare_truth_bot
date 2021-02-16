@@ -20,7 +20,6 @@ He/She will have two choice, "Dare" and "Truth" or "جرات" and "حقیقت"
 - Admin bot to accept or reject suggested questions
 - "Move to down" button
 - "Skip" button
-- Vote to convince the other members of the answer
 - Add second language
 ## How To Run
 #### Configure Environment Variables
