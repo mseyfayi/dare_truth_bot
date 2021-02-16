@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, List
 
 
 class StringsTextBtn:
@@ -13,15 +13,21 @@ class Commands:
 
 
 class Callbacks:
-    def __init__(self, bot_link_btn: str, not_recognized: str, not_found_alert: str, edit_text1: Callable[[any], str],
-                 edit_text2: StringsTextBtn,
-                 edit_text3: StringsTextBtn):
+    def __init__(self,
+                 bot_link_btn: str,
+                 not_recognized: str,
+                 not_found_alert: str,
+                 before_start: Callable[[any], str],
+                 choose_type: StringsTextBtn,
+                 question: StringsTextBtn,
+                 vote: StringsTextBtn):
         self.bot_link_btn = bot_link_btn
         self.not_recognized = not_recognized
         self.not_found_alert = not_found_alert
-        self.edit_text1 = edit_text1
-        self.edit_text2 = edit_text2
-        self.edit_text3 = edit_text3
+        self.before_start = before_start
+        self.choose_type = choose_type
+        self.question = question
+        self.vote = vote
 
 
 def create_game_inline_query_text(game) -> str:
@@ -49,12 +55,23 @@ dtc = {
 }
 
 
-def create_game_answer_text(user: str, dtc_type: str, question: str) -> str:
+def create_game_answer_text(user: str, dtc_type: str, question: str, is_repeated: bool) -> str:
     dtc_text = dtc[dtc_type]
-    text = "کاربر '{}' {} رو انتخاب کرد\n\n" \
-           "متن سوال:\n\n" \
-           "{}\n\n" \
-           "بعد جواب دادن دکمه جواب دادم رو بزن\n\n".format(user, dtc_text, question)
+    text = "کاربر '{}'! اعضا با جواب شما قانع نشدن\nلطفا دوباره جواب بدید\n\n" % user if is_repeated \
+        else "کاربر '{}' {} رو انتخاب کرد\n\n".format(user, dtc_text)
+    text += "متن سوال:\n\n" \
+            "{}\n\n" \
+            "بعد جواب دادن دکمه جواب دادم رو بزن\n\n".format(question)
+
+    return text
+
+
+def create_game_vote_text(answered_user: str, yes: List[str], no: List[str], remained: List[str]) -> str:
+    text = "کاربر '{}' دکمه جواب دادم رو زد\n\n" \
+           "آیا جواب داده شده قانع‌کننده بود؟\n\n" \
+           "بله: {}\n\n" \
+           "خیر: {}\n\n" \
+           "افراد باقی مانده:\n\n".format(answered_user, ','.join(yes), ','.join(no), ','.join(remained))
     return text
 
 
@@ -111,6 +128,13 @@ strings: Strings = Strings(
             create_game_answer_text,
             {
                 'answered': 'جواب دادم',
+            }
+        ),
+        StringsTextBtn(
+            create_game_vote_text,
+            {
+                'yes': 'بله',
+                'no': 'نه',
             }
         )
     ),

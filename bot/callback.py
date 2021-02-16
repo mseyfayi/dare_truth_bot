@@ -19,7 +19,7 @@ def create_bot_link_button(link: str):
 
 
 def create_choice_markup(game_id: int, link: str) -> ReplyMarkup:
-    buttons = callback_strings.edit_text2.buttons
+    buttons = callback_strings.choose_type.buttons
     payload = "{};".format(game_id)
     button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload + t) for t in buttons.keys()]
     reply_markup = InlineKeyboardMarkup(
@@ -28,7 +28,7 @@ def create_choice_markup(game_id: int, link: str) -> ReplyMarkup:
 
 
 def create_question_markup(game_id: int, link: str):
-    buttons = callback_strings.edit_text3.buttons
+    buttons = callback_strings.question.buttons
     payload = "{}".format(game_id)
     button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload) for t in buttons.keys()]
     reply_markup = InlineKeyboardMarkup(
@@ -60,7 +60,7 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_game_inline():
-            edit_message(callback_strings.edit_text1(game), create_inline_markup(game))
+            edit_message(callback_strings.before_start(game), create_inline_markup(game))
 
         game.get_in(MyUser.new(user.id, user.first_name), alert, edit_game_inline)
     elif CallbackDataType.START.value == data_type:
@@ -69,7 +69,7 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_game_inline():
-            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id, link))
+            edit_message(callback_strings.choose_type.text(game), create_choice_markup(game_id, link))
 
         game.start(starter_id, alert, edit_game_inline)
     elif CallbackDataType.CHOOSE.value == data_type:
@@ -78,7 +78,7 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_question(user: MyUser, question: Question):
-            edit_message(callback_strings.edit_text3.text(user.name, question.type, question.text),
+            edit_message(callback_strings.question.text(user.name, question.type, question.text),
                          create_question_markup(game_id, link))
 
         game.choose(user_id, q_type, alert, edit_question)
@@ -88,7 +88,7 @@ def callback(update: Update, context: CallbackContext):
         game = Game.get_instance(game_id)
 
         def edit_game_inline():
-            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id, link))
+            edit_message(callback_strings.vote.text(game), create_choice_markup(game_id, link))
 
         game.answer(user_id, alert, edit_game_inline)
     elif CallbackDataType.VOTE.value == data_type:
@@ -96,8 +96,9 @@ def callback(update: Update, context: CallbackContext):
         user_id = user.id
         game = Game.get_instance(game_id)
 
-        def edit_game_inline():
-            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id, link))
+        def edit_game_inline(is_convinced: bool):
+            text = callback_strings.choose_type.text(game) if is_convinced else callback_strings.question.text(game)
+            edit_message(text, create_choice_markup(game_id, link))
 
         game.vote(user_id, alert, edit_game_inline)
     else:
