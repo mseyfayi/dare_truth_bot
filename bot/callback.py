@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from telegram import Update, ReplyMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
@@ -6,9 +6,8 @@ from telegram.ext import CallbackContext
 from bot.callback_data import CallbackDataType, _restore_callback_data
 from bot.inline import create_inline_markup
 from entities.game import Game
-from entities.question import Question
-from strings import strings
 from entities.user import MyUser
+from strings import strings
 from utils import create_inline_button, build_menu
 
 callback_strings = strings.callbacks
@@ -18,22 +17,32 @@ def create_bot_link_button(link: str):
     return InlineKeyboardButton(callback_strings.bot_link_btn, url=link)
 
 
-def create_choice_markup(game_id: int, link: str) -> ReplyMarkup:
-    buttons = callback_strings.choose_type.buttons
-    payload = "{};".format(game_id)
-    button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload + t) for t in buttons.keys()]
+def create_buttons(game_id: str, link: str, buttons: Dict, is_attach_key: bool = True):
+    payload = "{}".format(game_id)
+    button_list = [create_inline_button(buttons, t,
+                                        callback_data_creator_payload=(payload + ';' + t) if is_attach_key else payload)
+                   for t in buttons.keys()]
     reply_markup = InlineKeyboardMarkup(
         build_menu(button_list, n_cols=2, footer_buttons=[create_bot_link_button(link)]))
     return reply_markup
 
 
-def create_question_markup(game_id: int, link: str):
+def create_choice_markup(game_id: str, link: str) -> ReplyMarkup:
+    buttons = callback_strings.choose_type.buttons
+
+    return create_buttons(game_id, link, buttons)
+
+
+def create_vote_markup(game_id: str, link: str) -> ReplyMarkup:
+    buttons = callback_strings.vote.buttons
+
+    return create_buttons(game_id, link, buttons)
+
+
+def create_question_markup(game_id: str, link: str):
     buttons = callback_strings.question.buttons
-    payload = "{}".format(game_id)
-    button_list = [create_inline_button(buttons, t, callback_data_creator_payload=payload) for t in buttons.keys()]
-    reply_markup = InlineKeyboardMarkup(
-        build_menu(button_list, n_cols=1, footer_buttons=[create_bot_link_button(link)]))
-    return reply_markup
+
+    return create_buttons(game_id, link, buttons, False)
 
 
 def callback(update: Update, context: CallbackContext):
@@ -77,9 +86,8 @@ def callback(update: Update, context: CallbackContext):
         user_id = user.id
         game = Game.get_instance(game_id)
 
-        def edit_question(user: MyUser, question: Question):
-            edit_message(callback_strings.question.text(user.name, question.type, question.text),
-                         create_question_markup(game_id, link))
+        def edit_question():
+            edit_message(callback_strings.question.text(game), create_question_markup(game_id, link))
 
         game.choose(user_id, q_type, alert, edit_question)
     elif CallbackDataType.ANSWER.value == data_type:
@@ -87,19 +95,27 @@ def callback(update: Update, context: CallbackContext):
         user_id = user.id
         game = Game.get_instance(game_id)
 
-        def edit_game_inline():
-            edit_message(callback_strings.vote.text(game), create_choice_markup(game_id, link))
+        def edit_vote():
+            edit_message(callback_strings.vote.text(game), create_vote_markup(game_id, link))
 
-        game.answer(user_id, alert, edit_game_inline)
+        game.answer(user_id, alert, edit_vote)
     elif CallbackDataType.VOTE.value == data_type:
-        [game_id] = payloads
+        [game_id, result] = payloads
         user_id = user.id
         game = Game.get_instance(game_id)
 
-        def edit_game_inline(is_convinced: bool):
-            text = callback_strings.choose_type.text(game) if is_convinced else callback_strings.question.text(game)
-            edit_message(text, create_choice_markup(game_id, link))
+        def edit(is_voting_finish: bool, is_repeated: bool):
+            if is_repeated:
+                text = callback_strings.question.text(game,is_repeated)
+                markup = create_question_markup(game_id, link)
+            elif is_voting_finish:
+                text = callback_strings.choose_type.text(game)
+                markup = create_choice_markup(game_id, link)
+            else:
+                text = callback_strings.vote.text(game)
+                markup = create_vote_markup(game_id, link)
+            edit_message(text, markup)
 
-        game.vote(user_id, alert, edit_game_inline)
+        game.vote(user_id, result, alert, edit)
     else:
         alert(callback_strings.not_recognized)

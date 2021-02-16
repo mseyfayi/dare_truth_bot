@@ -68,5 +68,6 @@ callbacks = {
     'dare': dare_cbd,
     'truth': truth_cbd,
     'answered': answer_cbd,
-    'vote': vote_cbd,
+    'yes': vote_cbd,
+    'no': vote_cbd,
 }

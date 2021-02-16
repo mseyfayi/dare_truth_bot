@@ -55,10 +55,14 @@ dtc = {
 }
 
 
-def create_game_answer_text(user: str, dtc_type: str, question: str, is_repeated: bool) -> str:
+def create_game_answer_text(game, is_repeated: Optional[bool] = False) -> str:
+    user_name: str = game.turn.name
+    dtc_type: str = game.question.type
+    question: str = game.question.text
     dtc_text = dtc[dtc_type]
-    text = "کاربر '{}'! اعضا با جواب شما قانع نشدن\nلطفا دوباره جواب بدید\n\n" % user if is_repeated \
-        else "کاربر '{}' {} رو انتخاب کرد\n\n".format(user, dtc_text)
+    repeat_question = "کاربر '{}'! اعضا با جواب شما قانع نشدن\nلطفا دوباره جواب بدید\n\n" .format(user_name)
+    new_question = "کاربر '{}' {} رو انتخاب کرد\n\n".format(user_name, dtc_text)
+    text = repeat_question if is_repeated else new_question
     text += "متن سوال:\n\n" \
             "{}\n\n" \
             "بعد جواب دادن دکمه جواب دادم رو بزن\n\n".format(question)
@@ -66,13 +70,31 @@ def create_game_answer_text(user: str, dtc_type: str, question: str, is_repeated
     return text
 
 
-def create_game_vote_text(answered_user: str, yes: List[str], no: List[str], remained: List[str]) -> str:
+def create_game_vote_text(game) -> str:
+    yes: List[str] = [x.name for x in game.yes_list]
+    no: List[str] = [x.name for x in game.no_list]
+    remained: List[str] = [x.name for x in game.members if x.name not in (yes + no) and x.id != game.turn.id]
+    answered_user = game.turn.name
+
+    def get_percent(numerator: List):
+        percent = len(numerator) * 100.0 / (len(yes) + len(no) + len(remained))
+        return "{:.2f}".format(percent)
+
     text = "کاربر '{}' دکمه جواب دادم رو زد\n\n" \
            "آیا جواب داده شده قانع‌کننده بود؟\n\n" \
-           "بله: {}\n\n" \
-           "خیر: {}\n\n" \
-           "افراد باقی مانده:\n\n".format(answered_user, ','.join(yes), ','.join(no), ','.join(remained))
+           "بله({}): {}\n\n" \
+           "خیر({}): {}\n\n" \
+           "افراد باقی مانده: {}\n\n".format(answered_user,
+                                             get_percent(yes),
+                                             make_csv(yes),
+                                             get_percent(no),
+                                             make_csv(no),
+                                             make_csv(remained))
     return text
+
+
+def make_csv(yes):
+    return ','.join(yes)
 
 
 class Inline:
@@ -83,12 +105,15 @@ class Inline:
 
 class GameAlerts:
     def __init__(self, start_minimum: str, start_non_inviter: str, already_got_in: str, successfully_got_in: str,
-                 not_ur_turn: str):
+                 not_ur_turn: str, cannot_vote_ur_turn: str, voted_before: str, vote_successful: str):
         self.start_minimum = start_minimum
         self.start_non_inviter = start_non_inviter
         self.already_got_in = already_got_in
         self.successfully_got_in = successfully_got_in
         self.not_ur_turn = not_ur_turn
+        self.cannot_vote_ur_turn = cannot_vote_ur_turn
+        self.voted_before = voted_before
+        self.vote_successful = vote_successful
 
 
 class Game:
@@ -154,7 +179,10 @@ strings: Strings = Strings(
             "فقط دعوت‌کننده است که میتونه شروع کنه",
             "شما قبلا عضو شدی",
             "عضو شدی\nصبر کن تا دعوت‌کننده شروع کنه",
-            "اکنون نوبت شما نیست"
+            "اکنون نوبت شما نیست",
+            "نمیتوانید به خودتان رای دهید",
+            "فقط یک بار رای می‌توان رای داد!",
+            "رای شما ثبت شد"
         )
     )
 )
