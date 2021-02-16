@@ -3,6 +3,8 @@ from typing import List, Optional, Dict
 import pymongo
 from decouple import config
 
+from entities.question_samples import questions
+
 environment = config("ENV")
 
 is_development = environment == 'development'
@@ -28,6 +30,9 @@ def get_collection(collection_name):
     else:
         collection = db.get_collection(collection_name)
     return collection
+
+
+get_collection('question').insert_many(questions)
 
 
 def mdb_insert(collection_name: str, data: Dict[str, str]) -> str:
