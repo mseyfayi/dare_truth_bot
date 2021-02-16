@@ -60,7 +60,7 @@ def create_game_answer_text(game, is_repeated: Optional[bool] = False) -> str:
     dtc_type: str = game.question.type
     question: str = game.question.text
     dtc_text = dtc[dtc_type]
-    repeat_question = "کاربر '{}'! اعضا با جواب شما قانع نشدن\nلطفا دوباره جواب بدید\n\n" .format(user_name)
+    repeat_question = "کاربر '{}'! اعضا با جواب شما قانع نشدن\nلطفا دوباره جواب بدید\n\n".format(user_name)
     new_question = "کاربر '{}' {} رو انتخاب کرد\n\n".format(user_name, dtc_text)
     text = repeat_question if is_repeated else new_question
     text += "متن سوال:\n\n" \
@@ -104,8 +104,10 @@ class Inline:
 
 
 class GameAlerts:
-    def __init__(self, start_minimum: str, start_non_inviter: str, already_got_in: str, successfully_got_in: str,
+    def __init__(self, ur_not_member: str, start_minimum: str, start_non_inviter: str, already_got_in: str,
+                 successfully_got_in: str,
                  not_ur_turn: str, cannot_vote_ur_turn: str, voted_before: str, vote_successful: str):
+        self.ur_not_member = ur_not_member
         self.start_minimum = start_minimum
         self.start_non_inviter = start_non_inviter
         self.already_got_in = already_got_in
@@ -175,6 +177,7 @@ strings: Strings = Strings(
     ),
     Game(
         GameAlerts(
+            "شما عضو بازی نیستید!",
             "باید تعداد بیشتری عضو بشن",
             "فقط دعوت‌کننده است که میتونه شروع کنه",
             "شما قبلا عضو شدی",

@@ -122,6 +122,8 @@ class Game:
 
     def choose(self, user_id: str, q_type: str, alert: Callable[[str], None],
                edit_question: Callable[[], None]):
+        if self.is_not_member(user_id, alert):
+            return
         if str(self.turn.id) != str(user_id):
             alert(game_strings.alert.not_ur_turn)
             return
@@ -129,6 +131,8 @@ class Game:
         edit_question()
 
     def answer(self, user_id: str, alert: Callable[[str], None], edit_game_inline: Callable[[], None]):
+        if self.is_not_member(user_id, alert):
+            return
         if str(self.turn.id) != str(user_id):
             alert(game_strings.alert.not_ur_turn)
             return
@@ -136,6 +140,8 @@ class Game:
 
     def vote(self, user_id: str, result: str, alert: Callable[[str], None],
              edit_game_inline: Callable[[bool, bool], None]):
+        if self.is_not_member(user_id, alert):
+            return
         if str(user_id) == self.turn.id:
             alert(game_strings.alert.cannot_vote_ur_turn)
             return
@@ -160,10 +166,14 @@ class Game:
 
         edit_game_inline(is_voting_finished, is_repeated)
 
+    def is_not_member(self, user_id: str, alert: Callable[[str], None] = None) -> bool:
+        res = any(m.id == str(user_id) for m in self.members)
+        if not res and alert:
+            alert(game_strings.alert.ur_not_member)
+        return res
+
     @classmethod
     def get_instance(cls, entity_id: str) -> Union[None, 'Game']:
         if entity_id in cls.instances:
             return cls.instances[entity_id]
         return None
-
-# todo check is_member? in all methods
