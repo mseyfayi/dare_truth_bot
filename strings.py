@@ -13,10 +13,11 @@ class Commands:
 
 
 class Callbacks:
-    def __init__(self, bot_link_btn: str, not_found_alert: str, edit_text1: Callable[[any], str],
+    def __init__(self, bot_link_btn: str, not_recognized: str, not_found_alert: str, edit_text1: Callable[[any], str],
                  edit_text2: StringsTextBtn,
                  edit_text3: StringsTextBtn):
         self.bot_link_btn = bot_link_btn
+        self.not_recognized = not_recognized
         self.not_found_alert = not_found_alert
         self.edit_text1 = edit_text1
         self.edit_text2 = edit_text2
@@ -99,6 +100,7 @@ strings: Strings = Strings(
     ),
     Callbacks(
         'بات جرات-حقیقت',
+        'عملکرد شناسایی نشد!',
         'ان شا اللّه بزودی آماده می‌شه :))',
         create_game_inline_query_text,
         StringsTextBtn(

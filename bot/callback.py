@@ -91,5 +91,14 @@ def callback(update: Update, context: CallbackContext):
             edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id, link))
 
         game.answer(user_id, alert, edit_game_inline)
+    elif CallbackDataType.VOTE.value == data_type:
+        [game_id] = payloads
+        user_id = user.id
+        game = Game.get_instance(game_id)
+
+        def edit_game_inline():
+            edit_message(callback_strings.edit_text2.text(game), create_choice_markup(game_id, link))
+
+        game.vote(user_id, alert, edit_game_inline)
     else:
-        print("koft1")
+        alert(callback_strings.not_recognized)
