@@ -32,9 +32,6 @@ def get_collection(collection_name):
     return collection
 
 
-get_collection('question').insert_many(questions)
-
-
 def mdb_insert(collection_name: str, data: Dict[str, str]) -> str:
     collection = get_collection(collection_name)
     print("inserting: ", collection_name, data)
