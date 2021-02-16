@@ -36,7 +36,7 @@ class Game:
 
     def convert_into_dict(self) -> Dict[str, str]:
         return {
-            "inviter_id": self.inviter.id,
+            "inviter_id": str(self.inviter.id),
             'turn_id': self.turn.id if self.turn else None,
             'is_active': self.is_active,
             'created_at': self.created_at,
@@ -74,7 +74,7 @@ class Game:
         mdb_update('game', {'turn_id': self.turn.id}, {'_id': ObjectId(self.id)})
 
     def next_question(self, q_type: str) -> Question:
-        if self.turn.id not in self.member_questions:
+        if str(self.turn.id) not in self.member_questions:
             self.member_questions[str(self.turn.id)] = []
 
         turn_asked_questions = self.member_questions[str(self.turn.id)]
