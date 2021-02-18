@@ -23,6 +23,7 @@ If more than half of members (except who is his/her turn) say "yes" game goes on
 - "Move to down" button
 - "Skip" button
 - Add second language
+- "End game" button
 ## How To Run
 #### Configure Environment Variables
 Create .env file

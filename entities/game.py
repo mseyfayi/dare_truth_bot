@@ -168,9 +168,9 @@ class Game:
 
     def is_not_member(self, user_id: str, alert: Callable[[str], None] = None) -> bool:
         res = any(m.id == str(user_id) for m in self.members)
-        if not res and alert:
+        if alert and not res:
             alert(game_strings.alert.ur_not_member)
-        return res
+        return not res
 
     @classmethod
     def get_instance(cls, entity_id: str) -> Union[None, 'Game']:
