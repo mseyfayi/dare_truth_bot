@@ -3,16 +3,17 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler, CallbackQu
 
 from bot.callback import callback
 from bot.commands import start
-from entities.game import Game
+from bot.conversation import send_question_conv
 from bot.inline import inline
+from entities.game import Game
 from entities.question import Question
 from entities.user import MyUser
 
 
 def load_data():
-    MyUser.load_all()
+    # MyUser.load_all()
     Question.load_all()
-    Game.load_all()
+    # Game.load_all()
     print("Games: ", Game.instances)
     print("MyUser: ", MyUser.instances)
     print("Question: ", Question.instances)
@@ -27,6 +28,7 @@ if __name__ == '__main__':
     handlers = [
         CommandHandler('start', start),
         InlineQueryHandler(inline),
+        send_question_conv,
         CallbackQueryHandler(callback)
     ]
 

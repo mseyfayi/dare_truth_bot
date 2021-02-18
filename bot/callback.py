@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from telegram import Update, ReplyMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
 
-from bot.callback_data import CallbackDataType, _restore_callback_data
+from bot.callback_data import CallbackDataType, restore_callback_data
 from bot.inline import create_inline_markup
 from entities.game import Game
 from entities.user import MyUser
@@ -22,6 +22,7 @@ def create_buttons(game_id: str, link: str, buttons: Dict, is_attach_key: bool =
     button_list = [create_inline_button(buttons, t,
                                         callback_data_creator_payload=(payload + ';' + t) if is_attach_key else payload)
                    for t in buttons.keys()]
+
     reply_markup = InlineKeyboardMarkup(
         build_menu(button_list, n_cols=2, footer_buttons=[create_bot_link_button(link)]))
     return reply_markup
@@ -59,10 +60,8 @@ def callback(update: Update, context: CallbackContext):
         context.bot.editMessageText(text, inline_message_id=query.inline_message_id, reply_markup=reply_markup)
 
     print("received: ", data)
-    data_type, payloads = _restore_callback_data(data)
+    data_type, payloads = restore_callback_data(data)
     if CallbackDataType.HELP.value == data_type:
-        alert(not_found_alert)
-    elif CallbackDataType.SEND_QUESTION.value == data_type:
         alert(not_found_alert)
     elif CallbackDataType.GET_IN.value == data_type:
         [game_id] = payloads
@@ -106,7 +105,7 @@ def callback(update: Update, context: CallbackContext):
 
         def edit(is_voting_finish: bool, is_repeated: bool):
             if is_repeated:
-                text = callback_strings.question.text(game,is_repeated)
+                text = callback_strings.question.text(game, is_repeated)
                 markup = create_question_markup(game_id, link)
             elif is_voting_finish:
                 text = callback_strings.choose_type.text(game)

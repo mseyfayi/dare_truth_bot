@@ -97,6 +97,13 @@ def make_csv(yes):
     return ','.join(yes)
 
 
+class Conversations:
+    def __init__(self, send_question_type: StringsTextBtn, enter_question_text: str, send_question_success: str):
+        self.send_question_type = send_question_type
+        self.enter_question_text = enter_question_text
+        self.send_question_success = send_question_success
+
+
 class Inline:
     def __init__(self, button: str, query_result: StringsTextBtn):
         self.button = button
@@ -124,9 +131,11 @@ class Game:
 
 
 class Strings:
-    def __init__(self, commands: Commands, callbacks: Callbacks, inline: Inline, game: Game):
+    def __init__(self, commands: Commands, callbacks: Callbacks, conversations: Conversations, inline: Inline,
+                 game: Game):
         self.commands = commands
         self.callbacks = callbacks
+        self.conversations = conversations
         self.game = game
         self.inline = inline
 
@@ -164,6 +173,14 @@ strings: Strings = Strings(
                 'no': 'نه',
             }
         )
+    ),
+    Conversations(
+        StringsTextBtn(
+            'نوع سوالی که میخواهید بفرستید را انتخاب کنید',
+            dtc
+        ),
+        'متن سوال پیشنهادی را تایپ کنید',
+        'ممنون از شما\nسوال شما پس از بررسی اضافه خواد شد'
     ),
     Inline(
         "ارسال",

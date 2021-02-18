@@ -89,8 +89,8 @@ class Game:
             self.member_questions[str(self.turn.id)] = []
 
         turn_asked_questions = self.member_questions[str(self.turn.id)]
-
-        remained_questions: List[Question] = [q for q in Question.instances.values()
+        active_questions = [q for q in Question.instances.values() if q.is_active]
+        remained_questions: List[Question] = [q for q in active_questions
                                               if q.type == q_type and q.id not in turn_asked_questions]
         next_q = random.choice(remained_questions)
         self.member_questions[str(self.turn.id)].append(next_q.id)
@@ -168,9 +168,9 @@ class Game:
 
     def is_not_member(self, user_id: str, alert: Callable[[str], None] = None) -> bool:
         res = any(m.id == str(user_id) for m in self.members)
-        if not res and alert:
+        if alert and not res:
             alert(game_strings.alert.ur_not_member)
-        return res
+        return not res
 
     @classmethod
     def get_instance(cls, entity_id: str) -> Union[None, 'Game']:

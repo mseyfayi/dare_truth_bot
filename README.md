@@ -13,6 +13,8 @@ A telegram bot that presents [dare or truth game](https://en.wikipedia.org/wiki/
 He/She will have two choice, "Dare" and "Truth" or "جرات" and "حقیقت" 
 - The will pick a question to answer (for truth) or a job to do (for dare)
 - After answering the question or doing the job, tap "Answered" or "جواب دادم"
+- The game polls to see if members are satisfied with the answer.
+If more than half of members (except who is his/her turn) say "yes" game goes on and if they say "no" game ask the same question/job again
 - Game will choose next person (It may be repetitive)
 - ...
 ### Upcoming Features
@@ -21,6 +23,7 @@ He/She will have two choice, "Dare" and "Truth" or "جرات" and "حقیقت"
 - "Move to down" button
 - "Skip" button
 - Add second language
+- "End game" button
 ## How To Run
 #### Configure Environment Variables
 Create .env file
