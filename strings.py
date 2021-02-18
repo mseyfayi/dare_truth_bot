@@ -17,7 +17,6 @@ class Callbacks:
                  bot_link_btn: str,
                  not_recognized: str,
                  not_found_alert: str,
-                 send_question_type: StringsTextBtn,
                  before_start: Callable[[any], str],
                  choose_type: StringsTextBtn,
                  question: StringsTextBtn,
@@ -25,7 +24,6 @@ class Callbacks:
         self.bot_link_btn = bot_link_btn
         self.not_recognized = not_recognized
         self.not_found_alert = not_found_alert
-        self.send_question_type = send_question_type
         self.before_start = before_start
         self.choose_type = choose_type
         self.question = question
@@ -99,6 +97,13 @@ def make_csv(yes):
     return ','.join(yes)
 
 
+class Conversations:
+    def __init__(self, send_question_type: StringsTextBtn, enter_question_text: str, send_question_success: str):
+        self.send_question_type = send_question_type
+        self.enter_question_text = enter_question_text
+        self.send_question_success = send_question_success
+
+
 class Inline:
     def __init__(self, button: str, query_result: StringsTextBtn):
         self.button = button
@@ -126,9 +131,11 @@ class Game:
 
 
 class Strings:
-    def __init__(self, commands: Commands, callbacks: Callbacks, inline: Inline, game: Game):
+    def __init__(self, commands: Commands, callbacks: Callbacks, conversations: Conversations, inline: Inline,
+                 game: Game):
         self.commands = commands
         self.callbacks = callbacks
+        self.conversations = conversations
         self.game = game
         self.inline = inline
 
@@ -148,10 +155,6 @@ strings: Strings = Strings(
         'بات جرات-حقیقت',
         'عملکرد شناسایی نشد!',
         'ان شا اللّه بزودی آماده می‌شه :))',
-        StringsTextBtn(
-            'نوع سوالی که میخواهید بفرستید را انتخاب کنید',
-            dtc
-        ),
         create_game_inline_query_text,
         StringsTextBtn(
             create_game_choose_text,
@@ -170,6 +173,14 @@ strings: Strings = Strings(
                 'no': 'نه',
             }
         )
+    ),
+    Conversations(
+        StringsTextBtn(
+            'نوع سوالی که میخواهید بفرستید را انتخاب کنید',
+            dtc
+        ),
+        'متن سوال پیشنهادی را تایپ کنید',
+        'ممنون از شما\nسوال شما پس از بررسی اضافه خواد شد'
     ),
     Inline(
         "ارسال",

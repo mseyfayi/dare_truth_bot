@@ -20,7 +20,7 @@ def _create_callback_data(data_type: CallbackDataType, payload: Optional = None)
     return data
 
 
-def _restore_callback_data(data: str) -> Tuple[str, Union[List, None]]:
+def restore_callback_data(data: str) -> Tuple[str, Union[List, None]]:
     if data.find(";"):
         split: List[str] = data.split(";")
         type, payloads = split[0], split[1:]

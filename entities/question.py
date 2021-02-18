@@ -1,15 +1,18 @@
 from typing import Union, Dict
 
-from entities.mongodb import mdb_select, mdb_insert
+from bson import ObjectId
+
+from entities.mongodb import mdb_select, mdb_insert, mdb_update
 
 
 class Question:
     instances: Dict[str, 'Question'] = {}
 
     def __init__(self, text: str, q_type: str):
-        self.text = text
-        self.type = q_type
-        self.id = self.__class__._insert(self)
+        self.text: str = text
+        self.type: str = q_type
+        self.is_active: bool = False
+        self.id: str = self.__class__._insert(self)
         self.__class__.instances[self.id] = self
 
     @classmethod
@@ -20,6 +23,7 @@ class Question:
         return {
             'text': self.text,
             'type': self.type,
+            'is_active': self.is_active
         }
 
     @classmethod
@@ -41,4 +45,10 @@ class Question:
         question.id = q["_id"]
         question.text = q['text']
         question.type = q['type']
+        question.is_active = bool(q['is_active'])
         return question
+
+    def active(self):
+        self.is_active = True
+        mdb_update('game', {'is_active': True},
+                   {'_id': ObjectId(self.id)})

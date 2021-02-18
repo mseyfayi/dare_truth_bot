@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from telegram import Update, ReplyMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
 
-from bot.callback_data import CallbackDataType, _restore_callback_data
+from bot.callback_data import CallbackDataType, restore_callback_data
 from bot.inline import create_inline_markup
 from entities.game import Game
 from entities.user import MyUser
@@ -17,7 +17,7 @@ def create_bot_link_button(link: str):
     return InlineKeyboardButton(callback_strings.bot_link_btn, url=link)
 
 
-def create_buttons(game_id: str, link: str, buttons: Dict, is_inline_keyboard: bool = True, is_attach_key: bool = True):
+def create_buttons(game_id: str, link: str, buttons: Dict, is_attach_key: bool = True):
     payload = "{}".format(game_id)
     button_list = [create_inline_button(buttons, t,
                                         callback_data_creator_payload=(payload + ';' + t) if is_attach_key else payload)
@@ -60,19 +60,9 @@ def callback(update: Update, context: CallbackContext):
         context.bot.editMessageText(text, inline_message_id=query.inline_message_id, reply_markup=reply_markup)
 
     print("received: ", data)
-    data_type, payloads = _restore_callback_data(data)
+    data_type, payloads = restore_callback_data(data)
     if CallbackDataType.HELP.value == data_type:
         alert(not_found_alert)
-    elif CallbackDataType.SEND_QUESTION.value == data_type:
-        send_string = callback_strings.send_question_type
-        button_list = [create_inline_button(send_string.buttons, t,
-                                            callback_data_name='send_question_type',
-                                            callback_data_creator_payload=t.upper())
-                       for t in send_string.buttons.keys()]
-
-        reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
-
-        context.bot.send_message(query.message.chat_id, send_string.text, reply_markup=reply_markup)
     elif CallbackDataType.GET_IN.value == data_type:
         [game_id] = payloads
         game = Game.get_instance(game_id)
