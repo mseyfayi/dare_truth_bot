@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from telegram import InlineKeyboardButton
+from telegram import InlineKeyboardButton, KeyboardButton
 
 from bot.callback_data import callbacks
 
@@ -19,17 +19,18 @@ def build_menu(buttons: List[InlineKeyboardButton], n_cols: int,
 def create_inline_button(
         buttons: dict,
         name: str,
+        is_inline: Optional[bool] = True,
+        callback_data_name: Optional[str] = None,
         switch_inline_query: Optional[str] = None,
         callback_data_creator_payload: Optional[any] = None
 ):
+    Type = InlineKeyboardButton if is_inline else KeyboardButton
     btn = buttons[name]
     if switch_inline_query is not None:
-        return InlineKeyboardButton(btn, switch_inline_query=switch_inline_query)
+        return Type(btn, switch_inline_query=switch_inline_query)
     else:
-        callback_data = callbacks[name]
+        callback_data = callbacks[callback_data_name] if callback_data_name else callbacks[name]
         if callback_data_creator_payload:
-            print("callback_data:", callback_data(callback_data_creator_payload))
-            print("callback_data length:", len(callback_data(callback_data_creator_payload).encode('utf-8')))
-            return InlineKeyboardButton(btn, callback_data=callback_data(callback_data_creator_payload))
+            return Type(btn, callback_data=callback_data(callback_data_creator_payload))
         else:
-            return InlineKeyboardButton(btn, callback_data=callback_data())
+            return Type(btn, callback_data=callback_data())

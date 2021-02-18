@@ -17,6 +17,7 @@ class Callbacks:
                  bot_link_btn: str,
                  not_recognized: str,
                  not_found_alert: str,
+                 send_question_type: StringsTextBtn,
                  before_start: Callable[[any], str],
                  choose_type: StringsTextBtn,
                  question: StringsTextBtn,
@@ -24,6 +25,7 @@ class Callbacks:
         self.bot_link_btn = bot_link_btn
         self.not_recognized = not_recognized
         self.not_found_alert = not_found_alert
+        self.send_question_type = send_question_type
         self.before_start = before_start
         self.choose_type = choose_type
         self.question = question
@@ -146,6 +148,10 @@ strings: Strings = Strings(
         'بات جرات-حقیقت',
         'عملکرد شناسایی نشد!',
         'ان شا اللّه بزودی آماده می‌شه :))',
+        StringsTextBtn(
+            'نوع سوالی که میخواهید بفرستید را انتخاب کنید',
+            dtc
+        ),
         create_game_inline_query_text,
         StringsTextBtn(
             create_game_choose_text,

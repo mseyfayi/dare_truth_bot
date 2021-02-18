@@ -6,7 +6,8 @@ class CallbackDataType(Enum):
     START = "START"
     GET_IN = "GET_IN"
     HELP = "NOT_FOUND"
-    SEND_QUESTION = "NOT_FOUND"
+    SEND_QUESTION = "SEND_QUESTION"
+    SEND_QUESTION_TYPE = "SEND_QUESTION_TYPE"
     CHOOSE = "CHOOSE"
     ANSWER = "ANSWER"
     VOTE = "VOTE"
@@ -36,6 +37,10 @@ def send_question_cbd() -> str:
     return _create_callback_data(CallbackDataType.SEND_QUESTION)
 
 
+def send_question_type_cbd(payload: str) -> str:
+    return _create_callback_data(CallbackDataType.SEND_QUESTION_TYPE, payload)
+
+
 def start_cbd(start_payload: str) -> str:
     return _create_callback_data(CallbackDataType.START, start_payload)
 
@@ -44,11 +49,11 @@ def get_in_cbd(get_in_payload: str) -> str:
     return _create_callback_data(CallbackDataType.GET_IN, get_in_payload)
 
 
-def dare_cbd(payload: str):
+def dare_cbd(payload: str = None):
     return _create_callback_data(CallbackDataType.CHOOSE, payload)
 
 
-def truth_cbd(payload: str):
+def truth_cbd(payload: str = None):
     return _create_callback_data(CallbackDataType.CHOOSE, payload)
 
 
@@ -63,6 +68,7 @@ def vote_cbd(payload: str):
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
+    'send_question_type': send_question_type_cbd,
     'start': start_cbd,
     'get_in': get_in_cbd,
     'dare': dare_cbd,
