@@ -3,8 +3,6 @@ from typing import List, Optional, Dict
 import pymongo
 from decouple import config
 
-from entities.question_samples import questions
-
 environment = config("ENV")
 
 is_development = environment == 'development'
