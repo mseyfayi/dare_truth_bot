@@ -47,7 +47,3 @@ def mdb_update(collection_name: str, new_data: Dict[str, any], query: Dict[str, 
 def mdb_select(collection_name: str, query: Optional[Dict[str, any]] = None) -> List[Dict[str, any]]:
     collection = get_collection(collection_name)
     return [x for x in collection.find(query)]
-
-
-for x in db['question'].find():
-    db['question'].update({"_id": ObjectId(x["_id"])}, {"$set": {"is_active": True}})
