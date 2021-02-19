@@ -3,7 +3,7 @@ from typing import Union, Dict
 from bson import ObjectId
 
 from admin_bot import call_new_question_event
-from entities.mongodb import mdb_select, mdb_insert, mdb_update
+from entities.mongodb import mdb_select, mdb_insert, mdb_update, mdb_delete
 
 
 class Question:
@@ -50,7 +50,11 @@ class Question:
         question.is_active = bool(q['is_active'])
         return question
 
-    def active(self):
+    def confirm(self):
         self.is_active = True
         mdb_update('game', {'is_active': True},
                    {'_id': ObjectId(self.id)})
+
+    def refuse(self):
+        del self.__class__.instances[self.id]
+        mdb_delete('question', {'_id': self.id})
