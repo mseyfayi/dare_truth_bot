@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from telegram import InlineKeyboardButton
+from telegram.ext import Updater, CommandHandler, Handler
 
 from bot.callback_data import callbacks
 
@@ -33,3 +34,14 @@ def create_inline_button(
             return InlineKeyboardButton(btn, callback_data=callback_data(callback_data_creator_payload))
         else:
             return InlineKeyboardButton(btn, callback_data=callback_data())
+
+
+def listen(token: str, handlers: List[Handler]):
+    updater = Updater(token)
+    dp = updater.dispatcher
+
+    for h in handlers:
+        dp.add_handler(h)
+
+    updater.start_polling()
+    updater.idle()
