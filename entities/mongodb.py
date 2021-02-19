@@ -46,3 +46,8 @@ def mdb_update(collection_name: str, new_data: Dict[str, any], query: Dict[str, 
 def mdb_select(collection_name: str, query: Optional[Dict[str, any]] = None) -> List[Dict[str, any]]:
     collection = get_collection(collection_name)
     return [x for x in collection.find(query)]
+
+
+def mdb_delete(collection_name: str, query: Dict[str, any]) -> None:
+    collection = get_collection(collection_name)
+    collection.delete_many(query)
