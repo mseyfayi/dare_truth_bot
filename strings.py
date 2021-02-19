@@ -138,8 +138,14 @@ class Game:
 
 
 class AdminNewQuestion:
-    def __init__(self, new_question_added: StringsTextBtn):
+    def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn):
         self.new_question_added = new_question_added
+        self.crs_question = confirm_refuse_skip_question
+
+
+def create_confirm_refuse_skip_question_text(question) -> str:
+    return "نوع: {}\n\n" \
+           "متن: {}\n\n".format(dtc[question.type], question.text)
 
 
 class Admin:
@@ -236,7 +242,15 @@ strings: Strings = Strings(
             StringsTextBtn(
                 "سوال جدیدی اضافه شده است.",
                 {
-                    'show_questions': 'نمایش سوال‌ها'
+                    'admin_show': 'نمایش سوال‌ها'
+                }
+            ),
+            StringsTextBtn(
+                create_confirm_refuse_skip_question_text,
+                {
+                    'admin_confirm': 'تایید',
+                    'admin_refuse': 'رد',
+                    'admin_skip': 'بعدی'
                 }
             )
         )

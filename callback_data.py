@@ -14,6 +14,9 @@ class CallbackDataType(Enum):
     VOTE = "VOTE"
 
     ADMIN_SHOW_QUESTIONS = "ADMIN_SHOW_QUESTIONS"
+    ADMIN_REFUSE_QUESTIONS = "ADMIN_REFUSE_QUESTIONS"
+    ADMIN_CONFIRM_QUESTIONS = "ADMIN_CONFIRM_QUESTIONS"
+    ADMIN_SKIP_QUESTIONS = "ADMIN_SKIP_QUESTIONS"
 
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
@@ -76,6 +79,18 @@ def admin_show_questions_cbd():
     return _create_callback_data(CallbackDataType.ADMIN_SHOW_QUESTIONS)
 
 
+def admin_confirm_questions_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.ADMIN_CONFIRM_QUESTIONS, payload)
+
+
+def admin_refuse_questions_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.ADMIN_REFUSE_QUESTIONS, payload)
+
+
+def admin_skip_questions_cbd(payload: str):
+    return _create_callback_data(CallbackDataType.ADMIN_SKIP_QUESTIONS, payload)
+
+
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
@@ -89,5 +104,8 @@ callbacks = {
     'yes': vote_cbd,
     'no': vote_cbd,
 
-    'show_questions': admin_show_questions_cbd
+    'admin_show': admin_show_questions_cbd,
+    'admin_refuse': admin_refuse_questions_cbd,
+    'admin_skip': admin_skip_questions_cbd,
+    'admin_confirm': admin_confirm_questions_cbd,
 }
