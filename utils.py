@@ -1,13 +1,14 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from telegram import InlineKeyboardButton, KeyboardButton
 
 from bot.callback_data import callbacks
 
 
-def build_menu(buttons: List[InlineKeyboardButton], n_cols: int,
-               header_buttons: Optional[List[InlineKeyboardButton]] = None,
-               footer_buttons: Optional[List[InlineKeyboardButton]] = None):
+def build_menu(buttons: List[Union[InlineKeyboardButton, KeyboardButton]], n_cols: int,
+               header_buttons: Optional[List[Union[InlineKeyboardButton, KeyboardButton]]] = None,
+               footer_buttons: Optional[List[Union[InlineKeyboardButton, KeyboardButton]]] = None)\
+        -> List[List[Union[InlineKeyboardButton, KeyboardButton]]]:
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
     if header_buttons:
         menu.insert(0, header_buttons)
@@ -23,7 +24,7 @@ def create_inline_button(
         callback_data_name: Optional[str] = None,
         switch_inline_query: Optional[str] = None,
         callback_data_creator_payload: Optional[any] = None
-):
+) -> Union[InlineKeyboardButton, KeyboardButton]:
     Type = InlineKeyboardButton if is_inline else KeyboardButton
     btn = buttons[name]
     if switch_inline_query is not None:
