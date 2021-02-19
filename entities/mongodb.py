@@ -1,7 +1,6 @@
 from typing import List, Optional, Dict
 
 import pymongo
-from bson import ObjectId
 from decouple import config
 
 environment = config("ENV")

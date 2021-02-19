@@ -6,6 +6,9 @@ from bot.commands import start_reply_markup
 from entities.question import Question
 from strings import strings
 from utils import build_menu, create_inline_button
+import warnings
+
+warnings.filterwarnings("ignore", message="If 'per_message=False', 'CallbackQueryHandler' will not be ")
 
 TYPE, TEXT = range(2)
 
