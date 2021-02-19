@@ -34,6 +34,8 @@ Fill .env file
 ```.env
 ENV=development | production
 
+ADMIN_PASSWORD= "Password of the admin (encrypetd by MD5)"
+
 MONGO_DBNAME= "Mongodb collection name"
 MONGO_USER= "Mongodb username"
 MONGO_PASS= "Mongodb password"
