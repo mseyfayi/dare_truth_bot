@@ -87,8 +87,8 @@ def admin_refuse_questions_cbd(payload: str):
     return _create_callback_data(CallbackDataType.ADMIN_REFUSE_QUESTIONS, payload)
 
 
-def admin_skip_questions_cbd(payload: str):
-    return _create_callback_data(CallbackDataType.ADMIN_SKIP_QUESTIONS, payload)
+def admin_skip_questions_cbd():
+    return _create_callback_data(CallbackDataType.ADMIN_SKIP_QUESTIONS)
 
 
 callbacks = {

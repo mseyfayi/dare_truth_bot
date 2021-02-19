@@ -138,9 +138,11 @@ class Game:
 
 
 class AdminNewQuestion:
-    def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn):
+    def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn,
+                 questions_finished: str):
         self.new_question_added = new_question_added
         self.crs_question = confirm_refuse_skip_question
+        self.questions_finished = questions_finished
 
 
 def create_confirm_refuse_skip_question_text(question) -> str:
@@ -250,9 +252,11 @@ strings: Strings = Strings(
                 {
                     'admin_confirm': 'تایید',
                     'admin_refuse': 'رد',
+                    # todo add change
                     'admin_skip': 'بعدی'
                 }
-            )
+            ),
+            "سوال تایید نشده نمانده است"
         )
     )
 )
