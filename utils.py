@@ -1,14 +1,14 @@
 from typing import Optional, List, Union
 
-from telegram import InlineKeyboardButton, KeyboardButton
+from telegram import InlineKeyboardButton
 
 from bot.callback_data import callbacks
 
 
-def build_menu(buttons: List[Union[InlineKeyboardButton, KeyboardButton]], n_cols: int,
-               header_buttons: Optional[List[Union[InlineKeyboardButton, KeyboardButton]]] = None,
-               footer_buttons: Optional[List[Union[InlineKeyboardButton, KeyboardButton]]] = None)\
-        -> List[List[Union[InlineKeyboardButton, KeyboardButton]]]:
+def build_menu(buttons: List[Union[InlineKeyboardButton]], n_cols: int,
+               header_buttons: Optional[List[Union[InlineKeyboardButton]]] = None,
+               footer_buttons: Optional[List[Union[InlineKeyboardButton]]] = None) \
+        -> List[List[Union[InlineKeyboardButton]]]:
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
     if header_buttons:
         menu.insert(0, header_buttons)
@@ -20,18 +20,16 @@ def build_menu(buttons: List[Union[InlineKeyboardButton, KeyboardButton]], n_col
 def create_inline_button(
         buttons: dict,
         name: str,
-        is_inline: Optional[bool] = True,
         callback_data_name: Optional[str] = None,
         switch_inline_query: Optional[str] = None,
         callback_data_creator_payload: Optional[any] = None
-) -> Union[InlineKeyboardButton, KeyboardButton]:
-    Type = InlineKeyboardButton if is_inline else KeyboardButton
+) -> Union[InlineKeyboardButton]:
     btn = buttons[name]
     if switch_inline_query is not None:
-        return Type(btn, switch_inline_query=switch_inline_query)
+        return InlineKeyboardButton(btn, switch_inline_query=switch_inline_query)
     else:
         callback_data = callbacks[callback_data_name] if callback_data_name else callbacks[name]
         if callback_data_creator_payload:
-            return Type(btn, callback_data=callback_data(callback_data_creator_payload))
+            return InlineKeyboardButton(btn, callback_data=callback_data(callback_data_creator_payload))
         else:
-            return Type(btn, callback_data=callback_data())
+            return InlineKeyboardButton(btn, callback_data=callback_data())
