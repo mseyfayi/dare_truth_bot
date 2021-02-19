@@ -11,9 +11,9 @@ from entities.user import MyUser
 
 
 def load_data():
-    # MyUser.load_all()
+    MyUser.load_all()
     Question.load_all()
-    # Game.load_all()
+    Game.load_all()
     print("Games: ", Game.instances)
     print("MyUser: ", MyUser.instances)
     print("Question: ", Question.instances)
