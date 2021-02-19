@@ -42,6 +42,7 @@ MONGO_PASS= "Mongodb password"
 MONGO_CLUSTER= "Mongodb cluster address for production (Mongodb Atlas)"
 
 BOT_TOKEN= "Token of Telegram Bot"
+ADMIN_BOT_TOKEN= "Token of Admin Telegram Bot"
 ```
 #### Install Dependencies
 ```commandline
