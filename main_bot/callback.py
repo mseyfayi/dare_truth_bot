@@ -3,8 +3,8 @@ from typing import Optional, Dict
 from telegram import Update, ReplyMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
 
-from bot.callback_data import CallbackDataType, restore_callback_data
-from bot.inline import create_inline_markup
+from main_bot.callback_data import CallbackDataType, restore_callback_data
+from main_bot.inline import create_inline_markup
 from entities.game import Game
 from entities.user import MyUser
 from strings import strings

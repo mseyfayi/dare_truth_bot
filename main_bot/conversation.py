@@ -4,8 +4,8 @@ from typing import List
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, CallbackQueryHandler, MessageHandler, Filters, CallbackContext
 
-from bot.callback_data import CallbackDataType, restore_callback_data
-from bot.commands import start_reply_markup
+from main_bot.callback_data import CallbackDataType, restore_callback_data
+from main_bot.commands import start_reply_markup
 from entities.question import Question
 from strings import strings
 from utils import build_menu, create_inline_button
