@@ -98,10 +98,17 @@ def make_csv(yes):
 
 
 class Conversations:
-    def __init__(self, send_question_type: StringsTextBtn, enter_question_text: str, send_question_success: str):
+    def __init__(self,
+                 send_question_type: StringsTextBtn,
+                 enter_question_text: str,
+                 send_question_success: str,
+                 send_question_cancel: str,
+                 cancel_btn_text: str):
         self.send_question_type = send_question_type
         self.enter_question_text = enter_question_text
         self.send_question_success = send_question_success
+        self.send_question_cancel = send_question_cancel
+        self.cancel_btn_text = cancel_btn_text
 
 
 class Inline:
@@ -180,7 +187,9 @@ strings: Strings = Strings(
             dtc
         ),
         'متن سوال پیشنهادی را تایپ کنید',
-        'ممنون از شما\nسوال شما پس از بررسی اضافه خواد شد'
+        'ممنون از شما\nسوال شما پس از بررسی اضافه خواد شد',
+        'فرایند پیشنهاد سوال لغو شد',
+        'انصراف'
     ),
     Inline(
         "ارسال",

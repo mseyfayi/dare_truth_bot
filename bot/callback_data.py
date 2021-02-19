@@ -8,6 +8,7 @@ class CallbackDataType(Enum):
     HELP = "NOT_FOUND"
     SEND_QUESTION = "SEND_QUESTION"
     SEND_QUESTION_TYPE = "SEND_QUESTION_TYPE"
+    SEND_QUESTION_CANCEL = "SEND_QUESTION_CANCEL"
     CHOOSE = "CHOOSE"
     ANSWER = "ANSWER"
     VOTE = "VOTE"
@@ -41,6 +42,10 @@ def send_question_type_cbd(payload: str) -> str:
     return _create_callback_data(CallbackDataType.SEND_QUESTION_TYPE, payload)
 
 
+def send_question_cancel_cdn() -> str:
+    return _create_callback_data(CallbackDataType.SEND_QUESTION_CANCEL)
+
+
 def start_cbd(start_payload: str) -> str:
     return _create_callback_data(CallbackDataType.START, start_payload)
 
@@ -69,6 +74,7 @@ callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
     'send_question_type': send_question_type_cbd,
+    'send_question_cancel': send_question_cancel_cdn,
     'start': start_cbd,
     'get_in': get_in_cbd,
     'dare': dare_cbd,
