@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from telegram import Update, ReplyMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
 
-from main_bot.callback_data import CallbackDataType, restore_callback_data
+from callback_data import CallbackDataType, restore_callback_data
 from main_bot.inline import create_inline_markup
 from entities.game import Game
 from entities.user import MyUser

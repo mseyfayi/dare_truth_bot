@@ -1,9 +1,9 @@
 from typing import Optional, List
 
 from telegram import InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, Handler
+from telegram.ext import Updater, Handler
 
-from bot.callback_data import callbacks
+from callback_data import callbacks
 
 
 def build_menu(buttons: List[InlineKeyboardButton], n_cols: int,
@@ -44,4 +44,3 @@ def listen(token: str, handlers: List[Handler]):
         dp.add_handler(h)
 
     updater.start_polling()
-    updater.idle()

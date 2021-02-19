@@ -137,14 +137,22 @@ class Game:
         self.alert = alert
 
 
+class Admin:
+    def __init__(self, start: str, password_retry: str, password_success: str):
+        self.start = start
+        self.password_retry = password_retry
+        self.password_success = password_success
+
+
 class Strings:
     def __init__(self, commands: Commands, callbacks: Callbacks, conversations: Conversations, inline: Inline,
-                 game: Game):
+                 game: Game, admin: Admin):
         self.commands = commands
         self.callbacks = callbacks
         self.conversations = conversations
         self.game = game
         self.inline = inline
+        self.admin = admin
 
 
 strings: Strings = Strings(
@@ -213,5 +221,10 @@ strings: Strings = Strings(
             "فقط یک بار رای می‌توان رای داد!",
             "رای شما ثبت شد"
         )
+    ),
+    Admin(
+        "رمز را وارد کنید\nپیام پس از ارسال حذف خواهد شد",
+        "اشتباه بود!\nرمز را دوباره وارد کنید",
+        "با موفقیت ثبت شدید."
     )
 )

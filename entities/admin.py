@@ -9,10 +9,10 @@ from entities.mongodb import mdb_select, mdb_insert
 class Admin:
     instances_list: List['Admin'] = []
 
-    def __init__(self, chat_id: str, password: str):
-        if hashlib.md5(password.encode()) != config("ADMIN_PASSWORD"):
+    def __init__(self, chat_id: int, password: str):
+        if hashlib.md5(password.encode()).hexdigest() != config("ADMIN_PASSWORD"):
             raise PermissionError()
-        self.chat_id: str = chat_id
+        self.chat_id: int = chat_id
         self.id = self.__class__._insert(self)
 
     @classmethod
@@ -32,12 +32,10 @@ class Admin:
     def _convert_dict_into_user(cls, a: Dict[str, any]) -> 'Admin':
         admin = cls.__new__(cls)
         admin.id = str(a['_id'])
-        admin.chat_id = str(a['chat_id'])
-        admin.password = str(a['password'])
+        admin.chat_id = int(a['chat_id'])
         return admin
 
     def convert_into_dict(self) -> Dict[str, str]:
         return {
-            '_id': self.id,
-            'chat_id': self.chat_id,
+            'chat_id': str(self.chat_id)
         }
