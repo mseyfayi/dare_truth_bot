@@ -13,6 +13,8 @@ class CallbackDataType(Enum):
     ANSWER = "ANSWER"
     VOTE = "VOTE"
 
+    ADMIN_SHOW_QUESTIONS = "ADMIN_SHOW_QUESTIONS"
+
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
     data = data_type.value
@@ -70,6 +72,10 @@ def vote_cbd(payload: str):
     return _create_callback_data(CallbackDataType.VOTE, payload)
 
 
+def admin_show_questions_cbd():
+    return _create_callback_data(CallbackDataType.ADMIN_SHOW_QUESTIONS)
+
+
 callbacks = {
     'help': help_cbd,
     'send_question': send_question_cbd,
@@ -82,4 +88,6 @@ callbacks = {
     'answered': answer_cbd,
     'yes': vote_cbd,
     'no': vote_cbd,
+
+    'show_questions': admin_show_questions_cbd
 }

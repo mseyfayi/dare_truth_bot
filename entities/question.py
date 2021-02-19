@@ -2,6 +2,7 @@ from typing import Union, Dict
 
 from bson import ObjectId
 
+from admin_bot import call_new_question_event
 from entities.mongodb import mdb_select, mdb_insert, mdb_update
 
 
@@ -13,6 +14,7 @@ class Question:
         self.type: str = q_type
         self.is_active: bool = False
         self.id: str = self.__class__._insert(self)
+        call_new_question_event()
         self.__class__.instances[self.id] = self
 
     @classmethod

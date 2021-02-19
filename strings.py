@@ -137,11 +137,17 @@ class Game:
         self.alert = alert
 
 
+class AdminNewQuestion:
+    def __init__(self, new_question_added: StringsTextBtn):
+        self.new_question_added = new_question_added
+
+
 class Admin:
-    def __init__(self, start: str, password_retry: str, password_success: str):
+    def __init__(self, start: str, password_retry: str, password_success: str, admin_new_question: AdminNewQuestion):
         self.start = start
         self.password_retry = password_retry
         self.password_success = password_success
+        self.admin_new_question = admin_new_question
 
 
 class Strings:
@@ -225,6 +231,14 @@ strings: Strings = Strings(
     Admin(
         "رمز را وارد کنید\nپیام پس از ارسال حذف خواهد شد",
         "اشتباه بود!\nرمز را دوباره وارد کنید",
-        "با موفقیت ثبت شدید."
+        "با موفقیت ثبت شدید.",
+        AdminNewQuestion(
+            StringsTextBtn(
+                "سوال جدیدی اضافه شده است.",
+                {
+                    'show_questions': 'نمایش سوال‌ها'
+                }
+            )
+        )
     )
 )

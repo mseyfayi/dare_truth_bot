@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext, ConversationHandler, MessageHandler, Filters
 
-from entities import Admin
+from entities.admin import Admin
 from strings import strings
 
 admin_strings = strings.admin

@@ -61,8 +61,6 @@ def choose_type(update: Update, context: CallbackContext) -> int:
 
 def writhe_text(update: Update, context: CallbackContext) -> int:
     text = update.message.text
-    # todo send to admin
-    print(update.message.chat_id)
     Question(text, question_type)
     context.bot.send_message(update.message.chat_id,
                              conv_strings.send_question_success,
