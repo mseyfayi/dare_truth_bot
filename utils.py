@@ -26,14 +26,14 @@ def create_inline_button(
         callback_data_creator_payload: Optional[any] = None
 ) -> InlineKeyboardButton:
     btn = buttons[name]
-    if switch_inline_query is not None:
-        return InlineKeyboardButton(btn, switch_inline_query=switch_inline_query)
+    if switch_inline_query is None:
+        create_callback_data = callbacks[callback_data_name] if callback_data_name else callbacks[name]
+        callback_data = create_callback_data(callback_data_creator_payload) \
+            if callback_data_creator_payload else create_callback_data()
     else:
-        callback_data = callbacks[callback_data_name] if callback_data_name else callbacks[name]
-        if callback_data_creator_payload:
-            return InlineKeyboardButton(btn, callback_data=callback_data(callback_data_creator_payload))
-        else:
-            return InlineKeyboardButton(btn, callback_data=callback_data())
+        callback_data = None
+
+    return InlineKeyboardButton(btn, switch_inline_query=switch_inline_query, callback_data=callback_data)
 
 
 def listen(token: str, handlers: List[Handler]) -> Dispatcher:
