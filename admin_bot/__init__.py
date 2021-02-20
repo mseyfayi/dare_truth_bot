@@ -5,8 +5,8 @@ from decouple import config
 from telegram.ext import Dispatcher
 
 import utils
-from admin_bot.confirm_question import confirm_question_conv
-from admin_bot.new_question import send_alert_to_admins
+from admin_bot.confirm_question_conv import confirm_question_conv
+from admin_bot.new_question_alert import send_alert_to_admins
 from admin_bot.start import start_conv
 
 dispatcher: Optional[Dispatcher] = None
