@@ -7,7 +7,7 @@ from entities.admin import Admin
 from strings import strings
 from utils import create_inline_button, build_menu
 
-new_question_strings = strings.admin.admin_new_question
+new_question_strings = strings.admin.new_question_alert
 
 
 def send_alert_to_admins(dispatcher: Dispatcher):

@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", message="If 'per_message=False', 'CallbackQuer
 
 SHOW_QUESTION, = range(1)
 
-strs = strings.admin.admin_new_question
+strs = strings.admin.new_question_alert
 
 
 def next_question() -> Question:

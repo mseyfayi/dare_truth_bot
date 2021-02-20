@@ -162,12 +162,19 @@ def create_confirmed_question(question) -> str:
     return "**تایید شده**\n\n" + create_confirm_refuse_skip_question_text(question)
 
 
+class AdminAddQuestion:
+    def __init__(self, ):
+        pass
+
+
 class Admin:
-    def __init__(self, start: str, password_retry: str, password_success: str, admin_new_question: AdminNewQuestion):
+    def __init__(self, start: str, password_retry: str, password_success: str, admin_new_question: AdminNewQuestion,
+                 add_question: AdminAddQuestion):
         self.start = start
         self.password_retry = password_retry
         self.password_success = password_success
-        self.admin_new_question = admin_new_question
+        self.new_question_alert = admin_new_question
+        self.add_question = add_question
 
 
 class Strings:
@@ -270,6 +277,7 @@ strings: Strings = Strings(
             "سوال تایید نشده نمانده است",
             create_confirmed_question,
             "عملیات متوقف شد"
-        )
+        ),
+        AdminAddQuestion
     )
 )
