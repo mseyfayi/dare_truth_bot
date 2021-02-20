@@ -53,9 +53,9 @@ class Question:
 
     def confirm(self):
         self.is_active = True
-        mdb_update('game', {'is_active': True},
+        mdb_update('question', {'is_active': str(True)},
                    {'_id': ObjectId(self.id)})
 
     def refuse(self):
         del self.__class__.instances[self.id]
-        mdb_delete('question', {'_id': self.id})
+        mdb_delete('question', {'_id': ObjectId(self.id)})
