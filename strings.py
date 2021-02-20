@@ -139,11 +139,12 @@ class Game:
 
 class AdminNewQuestion:
     def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn,
-                 questions_finished: str, confirmed_question: Callable):
+                 questions_finished: str, confirmed_question: Callable, operation_end: str):
         self.new_question_added = new_question_added
         self.crs_question = confirm_refuse_skip_question
         self.questions_finished = questions_finished
         self.confirmed_question = confirmed_question
+        self.operation_end = operation_end
 
 
 def create_confirm_refuse_skip_question_text(question) -> str:
@@ -265,7 +266,8 @@ strings: Strings = Strings(
                 }
             ),
             "سوال تایید نشده نمانده است",
-            create_confirmed_question
+            create_confirmed_question,
+            "عملیات متوقف شد"
         )
     )
 )

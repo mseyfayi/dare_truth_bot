@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Callable
+from typing import Optional, Callable, Dict
 
 from telegram import Update, InlineKeyboardMarkup, ReplyMarkup
 from telegram.ext import ConversationHandler, CallbackQueryHandler, CallbackContext, CommandHandler
@@ -69,6 +69,12 @@ def show_next_question(send_message: Callable[[str, ReplyMarkup], None], questio
     send_message(text, reply_markup)
 
 
+def end_question(update: Update, context: CallbackContext) -> int:
+    message = update.callback_query.message
+    context.bot.edit_message_text(strs.operation_end, message.chat_id, message.message_id)
+    return ConversationHandler.END
+
+
 confirm_question_conv = ConversationHandler(
     entry_points=[
         CallbackQueryHandler(show_question, pattern='^{}$'.format(CallbackDataType.ADMIN_SHOW_QUESTIONS.value)),
@@ -76,13 +82,13 @@ confirm_question_conv = ConversationHandler(
     ],
     states={
         SHOW_QUESTION: [CallbackQueryHandler(show_question,
-                                             pattern='^({}|{}|{})(;.*)?$'.format(
-                                                 CallbackDataType.ADMIN_SKIP_QUESTIONS.value,
+                                             pattern='^({}|{}|{});.*$'.format(
+                                                 CallbackDataType.ADMIN_CHANGE_QUESTIONS.value,
                                                  CallbackDataType.ADMIN_CONFIRM_QUESTIONS.value,
                                                  CallbackDataType.ADMIN_REFUSE_QUESTIONS.value,
                                              ))]
     },
     fallbacks=[
-        # todo End btn
+        CallbackQueryHandler(end_question, pattern='^{}$'.format(CallbackDataType.ADMIN_END_QUESTIONS.value))
     ],
 )
