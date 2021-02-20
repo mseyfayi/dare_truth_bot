@@ -2,7 +2,6 @@ from typing import Union, Dict
 
 from bson import ObjectId
 
-from admin_bot import call_new_question_event
 from entities.mongodb import mdb_select, mdb_insert, mdb_update, mdb_delete
 
 
@@ -10,6 +9,8 @@ class Question:
     instances: Dict[str, 'Question'] = {}
 
     def __init__(self, text: str, q_type: str):
+        from admin_bot import call_new_question_event
+
         self.text: str = text
         self.type: str = q_type
         self.is_active: bool = False
@@ -44,7 +45,7 @@ class Question:
     @classmethod
     def _convert_dict_into_question(cls, q: Dict[str, str]) -> 'Question':
         question = cls.__new__(cls)
-        question.id = q["_id"]
+        question.id = str(q["_id"])
         question.text = q['text']
         question.type = q['type']
         question.is_active = bool(q['is_active'])
