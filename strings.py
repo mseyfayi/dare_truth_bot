@@ -259,9 +259,9 @@ strings: Strings = Strings(
                 {
                     'admin_confirm': 'تایید',
                     'admin_refuse': 'رد',
-                    # todo add Change
-                    'admin_skip': 'بعدی'
-                    # todo add End
+                    'admin_change': 'تغییر',
+
+                    'admin_end': 'پایان'
                 }
             ),
             "سوال تایید نشده نمانده است",
