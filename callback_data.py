@@ -18,6 +18,9 @@ class CallbackDataType(Enum):
     ADMIN_CONFIRM_QUESTIONS = "ADMIN_CONFIRM_QUESTIONS"
     ADMIN_END_QUESTIONS = "ADMIN_END_QUESTIONS"
 
+    ADMIN_ADD_QUESTION_TYPE = "ADMIN_ADD_QUESTION_TYPE"
+    ADMIN_ADD_QUESTION_CANCEL = "ADMIN_ADD_QUESTION_CANCEL"
+
 
 def _create_callback_data(data_type: CallbackDataType, payload: Optional = None) -> str:
     data = data_type.value
@@ -87,9 +90,16 @@ def admin_refuse_questions_cbd(payload: str):
     return _create_callback_data(CallbackDataType.ADMIN_REFUSE_QUESTIONS, payload)
 
 
-
 def admin_end_questions_cbd():
     return _create_callback_data(CallbackDataType.ADMIN_END_QUESTIONS)
+
+
+def admin_add_question_type_cbd(payload: str) -> str:
+    return _create_callback_data(CallbackDataType.ADMIN_ADD_QUESTION_TYPE, payload)
+
+
+def admin_add_question_cancel_cdn() -> str:
+    return _create_callback_data(CallbackDataType.ADMIN_ADD_QUESTION_CANCEL)
 
 
 callbacks = {
@@ -109,4 +119,7 @@ callbacks = {
     'admin_refuse': admin_refuse_questions_cbd,
     'admin_confirm': admin_confirm_questions_cbd,
     'admin_end': admin_end_questions_cbd,
+
+    'admin_add_question_type': admin_add_question_type_cbd,
+    'admin_add_question_cancel': admin_add_question_cancel_cdn,
 }

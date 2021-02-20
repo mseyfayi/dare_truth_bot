@@ -5,6 +5,7 @@ from decouple import config
 from telegram.ext import Dispatcher
 
 import utils
+from admin_bot.add_question_cnv import add_question_conv
 from admin_bot.confirm_question_conv import confirm_question_conv
 from admin_bot.new_question_alert import send_alert_to_admins
 from admin_bot.start import start_conv
@@ -15,8 +16,9 @@ dispatcher: Optional[Dispatcher] = None
 def bot_listen():
     handlers = [
         start_conv,
-        confirm_question_conv
-        # todo add question
+        confirm_question_conv,
+        add_question_conv
+        # todo change question
     ]
 
     global dispatcher

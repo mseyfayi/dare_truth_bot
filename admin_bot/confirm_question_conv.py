@@ -23,6 +23,7 @@ def next_question() -> Question:
 
 
 def show_question(update: Update, context: CallbackContext) -> int:
+    # todo check permission
     query = update.callback_query
     message = query.message if query else update.message
 

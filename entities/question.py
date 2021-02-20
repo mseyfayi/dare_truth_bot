@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 from bson import ObjectId
 
@@ -8,12 +8,12 @@ from entities.mongodb import mdb_select, mdb_insert, mdb_update, mdb_delete
 class Question:
     instances: Dict[str, 'Question'] = {}
 
-    def __init__(self, text: str, q_type: str):
+    def __init__(self, text: str, q_type: str, is_active: Optional[bool] = False):
         from admin_bot import call_new_question_event
 
         self.text: str = text
         self.type: str = q_type
-        self.is_active: bool = False
+        self.is_active: bool = is_active
         self.id: str = self.__class__._insert(self)
         call_new_question_event()
         self.__class__.instances[self.id] = self

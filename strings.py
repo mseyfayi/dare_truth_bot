@@ -163,8 +163,14 @@ def create_confirmed_question(question) -> str:
 
 
 class AdminAddQuestion:
-    def __init__(self, ):
-        pass
+    def __init__(self, operation_canceled: str, operation_success: str,
+                 enter_question_text: str,
+                 question_type: StringsTextBtn, cancel_btn_text: str):
+        self.operation_canceled = operation_canceled
+        self.operation_success = operation_success
+        self.enter_question_text = enter_question_text
+        self.question_type = question_type
+        self.cancel_btn_text = cancel_btn_text
 
 
 class Admin:
@@ -278,6 +284,15 @@ strings: Strings = Strings(
             create_confirmed_question,
             "عملیات متوقف شد"
         ),
-        AdminAddQuestion
+        AdminAddQuestion(
+            "عملبات لغو شد",
+            "عملبات با موفقیت انجام شد",
+            " متن سوال را وارد کنید",
+            StringsTextBtn(
+                "نوع سوال را انتخاب کنید",
+                dtc
+            ),
+            'انصراف'
+        )
     )
 )
