@@ -40,6 +40,7 @@ def mdb_insert(collection_name: str, data: Dict[str, str]) -> str:
 def mdb_update(collection_name: str, new_data: Dict[str, any], query: Dict[str, any]):
     collection = get_collection(collection_name)
     new_data = {"$set": new_data}
+    print("updating: ", collection_name, new_data, query)
     collection.update_one(query, new_data)
 
 
@@ -50,4 +51,5 @@ def mdb_select(collection_name: str, query: Optional[Dict[str, any]] = None) -> 
 
 def mdb_delete(collection_name: str, query: Dict[str, any]) -> None:
     collection = get_collection(collection_name)
+    print("deleting: ", collection_name, query)
     collection.delete_many(query)
