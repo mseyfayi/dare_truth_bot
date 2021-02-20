@@ -139,15 +139,22 @@ class Game:
 
 class AdminNewQuestion:
     def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn,
-                 questions_finished: str):
+                 questions_finished: str, confirmed_question: Callable):
         self.new_question_added = new_question_added
         self.crs_question = confirm_refuse_skip_question
         self.questions_finished = questions_finished
+        self.confirmed_question = confirmed_question
 
 
 def create_confirm_refuse_skip_question_text(question) -> str:
-    return "نوع: {}\n\n" \
-           "متن: {}\n\n".format(dtc[question.type], question.text)
+    return "نوع: {}\n" \
+           "متن: {}\n".format(dtc[question.type], question.text)
+
+
+def create_confirmed_question(question) -> str:
+    if not question.is_active:
+        raise PermissionError
+    return "**تایید شده**\n\n" + create_confirm_refuse_skip_question_text(question)
 
 
 class Admin:
@@ -252,11 +259,13 @@ strings: Strings = Strings(
                 {
                     'admin_confirm': 'تایید',
                     'admin_refuse': 'رد',
-                    # todo add change
+                    # todo add Change
                     'admin_skip': 'بعدی'
+                    # todo add End
                 }
             ),
-            "سوال تایید نشده نمانده است"
+            "سوال تایید نشده نمانده است",
+            create_confirmed_question
         )
     )
 )
