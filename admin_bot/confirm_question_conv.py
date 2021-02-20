@@ -4,6 +4,7 @@ from typing import Optional, Callable, Union
 from telegram import Update, InlineKeyboardMarkup, ReplyMarkup
 from telegram.ext import ConversationHandler, CallbackQueryHandler, CallbackContext, CommandHandler
 
+from admin_bot.check_permission import check_permission
 from callback_data import CallbackDataType, restore_callback_data
 from entities.question import Question
 from strings import strings
@@ -23,9 +24,11 @@ def next_question() -> Question:
 
 
 def show_question(update: Update, context: CallbackContext) -> int:
-    # todo check permission
     query = update.callback_query
     message = query.message if query else update.message
+
+    if not check_permission(message.chat_id, context, message):
+        return ConversationHandler.END
 
     def edit_message(text: str, reply_markup: Optional[ReplyMarkup] = None):
         context.bot.edit_message_text(text, message.chat_id, message.message_id, reply_markup=reply_markup)

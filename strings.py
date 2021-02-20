@@ -174,9 +174,11 @@ class AdminAddQuestion:
 
 
 class Admin:
-    def __init__(self, start: str, password_retry: str, password_success: str, admin_new_question: AdminNewQuestion,
+    def __init__(self, start: str, not_allowed: str, password_retry: str, password_success: str,
+                 admin_new_question: AdminNewQuestion,
                  add_question: AdminAddQuestion):
         self.start = start
+        self.not_allowed = not_allowed
         self.password_retry = password_retry
         self.password_success = password_success
         self.new_question_alert = admin_new_question
@@ -263,6 +265,7 @@ strings: Strings = Strings(
     ),
     Admin(
         "رمز را وارد کنید\nپیام پس از ارسال حذف خواهد شد",
+        "حساب شما در سیستم ثبت نشده است\nلطفا با دستور /start دوباره وارد شوید",
         "اشتباه بود!\nرمز را دوباره وارد کنید",
         "با موفقیت ثبت شدید.",
         AdminNewQuestion(

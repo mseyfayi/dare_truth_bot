@@ -5,6 +5,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler, CallbackQueryHandler, CommandHandler, CallbackContext, MessageHandler, \
     Filters
 
+from admin_bot.check_permission import check_permission
 from callback_data import CallbackDataType, restore_callback_data
 from entities.question import Question
 from strings import strings
@@ -30,6 +31,11 @@ def create_aq_rm(button_list: List[InlineKeyboardButton]) -> InlineKeyboardMarku
 
 
 def start(update: Update, context: CallbackContext) -> int:
+    message = update.message
+
+    if not check_permission(message.chat_id, context, message):
+        return ConversationHandler.END
+
     send_string = strs.question_type
     button_list = [
         create_inline_button(send_string.buttons, t,
@@ -38,7 +44,6 @@ def start(update: Update, context: CallbackContext) -> int:
         for t in send_string.buttons.keys()
     ]
 
-    message = update.message
     context.bot.send_message(message.chat_id, send_string.text, reply_markup=create_aq_rm(button_list))
     return TYPE
 
