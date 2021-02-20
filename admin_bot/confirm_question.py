@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Callable, Dict
+from typing import Optional, Callable, Union
 
 from telegram import Update, InlineKeyboardMarkup, ReplyMarkup
 from telegram.ext import ConversationHandler, CallbackQueryHandler, CallbackContext, CommandHandler
@@ -42,31 +42,34 @@ def show_question(update: Update, context: CallbackContext) -> int:
             instance = Question.get_instance(payloads[0])
             instance.confirm()
             edit_message(strs.confirmed_question(instance))
+            return show_next_question(send_message)
         elif data_type == CallbackDataType.ADMIN_REFUSE_QUESTIONS.value:
             Question.get_instance(payloads[0]).refuse()
             delete_message()
+            return show_next_question(send_message)
         else:
             delete_message()
+            return show_next_question(send_message)
+    else:
+        return show_next_question(send_message)
 
+
+def show_next_question(send_message: Callable[[str, Union[ReplyMarkup, None]], None]) -> int:
     question = next(next_question(), None)
     if question:
-        show_next_question(send_message, question)
+        crs_question = strs.crs_question
+        text = crs_question.text(question)
+        buttons = [
+            create_inline_button(crs_question.buttons, 'admin_refuse', callback_data_creator_payload=question.id),
+            create_inline_button(crs_question.buttons, 'admin_confirm', callback_data_creator_payload=question.id),
+        ]
+        footer = [create_inline_button(crs_question.buttons, 'admin_end')]
+        reply_markup = InlineKeyboardMarkup(build_menu(buttons, n_cols=3, footer_buttons=footer))
+        send_message(text, reply_markup)
         return SHOW_QUESTION
     else:
-        send_message(strs.questions_finished)
+        send_message(strs.questions_finished, None)
         return ConversationHandler.END
-
-
-def show_next_question(send_message: Callable[[str, ReplyMarkup], None], question: Question):
-    crs_question = strs.crs_question
-    text = crs_question.text(question)
-    buttons = [
-        create_inline_button(crs_question.buttons, 'admin_refuse', callback_data_creator_payload=question.id),
-        create_inline_button(crs_question.buttons, 'admin_confirm', callback_data_creator_payload=question.id),
-    ]
-    footer = [create_inline_button(crs_question.buttons, 'admin_skip')]
-    reply_markup = InlineKeyboardMarkup(build_menu(buttons, n_cols=2, footer_buttons=footer))
-    send_message(text, reply_markup)
 
 
 def end_question(update: Update, context: CallbackContext) -> int:
@@ -82,8 +85,7 @@ confirm_question_conv = ConversationHandler(
     ],
     states={
         SHOW_QUESTION: [CallbackQueryHandler(show_question,
-                                             pattern='^({}|{}|{});.*$'.format(
-                                                 CallbackDataType.ADMIN_CHANGE_QUESTIONS.value,
+                                             pattern='^({}|{});.*$'.format(
                                                  CallbackDataType.ADMIN_CONFIRM_QUESTIONS.value,
                                                  CallbackDataType.ADMIN_REFUSE_QUESTIONS.value,
                                              ))]

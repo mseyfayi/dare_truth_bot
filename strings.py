@@ -138,8 +138,12 @@ class Game:
 
 
 class AdminNewQuestion:
-    def __init__(self, new_question_added: StringsTextBtn, confirm_refuse_skip_question: StringsTextBtn,
-                 questions_finished: str, confirmed_question: Callable, operation_end: str):
+    def __init__(self,
+                 new_question_added: StringsTextBtn,
+                 confirm_refuse_skip_question: StringsTextBtn,
+                 questions_finished: str,
+                 confirmed_question: Callable,
+                 operation_end: str):
         self.new_question_added = new_question_added
         self.crs_question = confirm_refuse_skip_question
         self.questions_finished = questions_finished
@@ -260,8 +264,6 @@ strings: Strings = Strings(
                 {
                     'admin_confirm': 'تایید',
                     'admin_refuse': 'رد',
-                    'admin_change': 'تغییر',
-
                     'admin_end': 'پایان'
                 }
             ),
