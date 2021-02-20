@@ -16,6 +16,7 @@ def bot_listen():
     handlers = [
         start_conv,
         confirm_question_conv
+        # todo add question
     ]
 
     global dispatcher
